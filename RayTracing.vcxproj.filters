@@ -1,0 +1,76 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Math">
+      <UniqueIdentifier>{c3372525-48e6-431d-8a80-f5fe6ad20677}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Math\Accel">
+      <UniqueIdentifier>{467175a5-1017-4f5b-8f8d-ac5d86a909f5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Platform">
+      <UniqueIdentifier>{bcc62eaf-46c7-4e32-aee2-793fafd7599f}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Source\Math\Accel\MathAccel.h">
+      <Filter>Math\Accel</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Math\Accel\MathAccelGeneral.h">
+      <Filter>Math\Accel</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Math\Accel\MathAccelSSE.h">
+      <Filter>Math\Accel</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Math\Color.h">
+      <Filter>Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Math\Mat.h">
+      <Filter>Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Math\Mat3x3f.h">
+      <Filter>Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Math\Mat4x3f.h">
+      <Filter>Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Math\Mat4x4f.h">
+      <Filter>Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Math\Math.h">
+      <Filter>Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Math\Quat.h">
+      <Filter>Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Math\Vec.h">
+      <Filter>Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Math\Vec2f.h">
+      <Filter>Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Math\Vec3f.h">
+      <Filter>Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Math\Vec4f.h">
+      <Filter>Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Platform\ClangDefines.h">
+      <Filter>Platform</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Platform\GCCDefines.h">
+      <Filter>Platform</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Platform\MSVCDefines.h">
+      <Filter>Platform</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Platform\PlatformDefines.h">
+      <Filter>Platform</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Platform\Platform.h">
+      <Filter>Platform</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Source\main.cpp" />
+  </ItemGroup>
+</Project>

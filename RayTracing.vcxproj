@@ -119,6 +119,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Source\Core\BRDF.h" />
+    <ClInclude Include="Source\Core\Ray.h" />
     <ClInclude Include="Source\Math\Accel\MathAccel.h" />
     <ClInclude Include="Source\Math\Accel\MathAccelGeneral.h" />
     <ClInclude Include="Source\Math\Accel\MathAccelSSE.h" />
@@ -140,6 +142,8 @@
     <ClInclude Include="Source\Platform\PlatformDefines.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Source\Core\BRDF.cpp" />
+    <ClCompile Include="Source\Core\Ray.cpp" />
     <ClCompile Include="Source\main.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

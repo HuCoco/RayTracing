@@ -10,6 +10,9 @@
     <Filter Include="Platform">
       <UniqueIdentifier>{bcc62eaf-46c7-4e32-aee2-793fafd7599f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Core">
+      <UniqueIdentifier>{7c811f06-8fb7-482e-bef7-4e1a06c54b55}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Math\Accel\MathAccel.h">
@@ -69,8 +72,20 @@
     <ClInclude Include="Source\Platform\Platform.h">
       <Filter>Platform</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Core\Ray.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\BRDF.h">
+      <Filter>Core</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\main.cpp" />
+    <ClCompile Include="Source\Core\Ray.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\BRDF.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

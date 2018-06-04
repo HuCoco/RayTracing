@@ -12,7 +12,7 @@ public:
     inline Vec3f GetSource() const { return mSource; }
     inline Vec3f GetDirection() const { return mDirection; }
 
-    inline Vec3f GetDestPostion(float t) const;
+    Vec3f GetDestPostion(float t) const;
 
 private:
     Vec3f mSource{ 0.0f,0.0f,0.0f };

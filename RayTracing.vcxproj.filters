@@ -13,6 +13,18 @@
     <Filter Include="Core">
       <UniqueIdentifier>{7c811f06-8fb7-482e-bef7-4e1a06c54b55}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Core\Ray">
+      <UniqueIdentifier>{ff0c1d95-a49d-4a65-977f-f5166aa9ee72}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core\Surface">
+      <UniqueIdentifier>{6e172a55-f2fd-419f-ab10-cbd0c0508d55}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core\Material">
+      <UniqueIdentifier>{234f98c3-152c-4343-89be-95aad55b1b66}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Image">
+      <UniqueIdentifier>{c8a92725-3b03-4176-b0c5-37848ca02dbc}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Math\Accel\MathAccel.h">
@@ -72,20 +84,44 @@
     <ClInclude Include="Source\Platform\Platform.h">
       <Filter>Platform</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Core\Ray.h">
-      <Filter>Core</Filter>
-    </ClInclude>
     <ClInclude Include="Source\Core\BRDF.h">
       <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\Ray.h">
+      <Filter>Core\Ray</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\Material.h">
+      <Filter>Core\Material</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\Surface.h">
+      <Filter>Core\Surface</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\Sphere.h">
+      <Filter>Core\Surface</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Image\Image.h">
+      <Filter>Image</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\main.cpp" />
-    <ClCompile Include="Source\Core\Ray.cpp">
-      <Filter>Core</Filter>
-    </ClCompile>
     <ClCompile Include="Source\Core\BRDF.cpp">
       <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\Ray.cpp">
+      <Filter>Core\Ray</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\Material.cpp">
+      <Filter>Core\Material</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\Surface.cpp">
+      <Filter>Core\Surface</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\Sphere.cpp">
+      <Filter>Core\Surface</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Image\Image.cpp">
+      <Filter>Image</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

@@ -1,5 +1,5 @@
 #include "Sphere.h"
-
+#include <Core/Ray.h>
 Sphere::Sphere(const Vec3f& center, float radius)
     : mCenter(center)
     , mRadius(radius)
@@ -28,7 +28,7 @@ bool Sphere::Hit(const Ray& ray, float min, float max, SurfaceHitResult& result)
         result.material = mMaterial;
         return true;
     }
-    false;
+    return false;
 }
 
 bool Sphere::ShadowHit(const Ray &ray, float tmin, float tmax) const

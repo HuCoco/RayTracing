@@ -120,7 +120,11 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Source\Core\BRDF.h" />
+    <ClInclude Include="Source\Core\Material.h" />
     <ClInclude Include="Source\Core\Ray.h" />
+    <ClInclude Include="Source\Core\Sphere.h" />
+    <ClInclude Include="Source\Core\Surface.h" />
+    <ClInclude Include="Source\Image\Image.h" />
     <ClInclude Include="Source\Math\Accel\MathAccel.h" />
     <ClInclude Include="Source\Math\Accel\MathAccelGeneral.h" />
     <ClInclude Include="Source\Math\Accel\MathAccelSSE.h" />
@@ -143,7 +147,11 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Core\BRDF.cpp" />
+    <ClCompile Include="Source\Core\Material.cpp" />
     <ClCompile Include="Source\Core\Ray.cpp" />
+    <ClCompile Include="Source\Core\Sphere.cpp" />
+    <ClCompile Include="Source\Core\Surface.cpp" />
+    <ClCompile Include="Source\Image\Image.cpp" />
     <ClCompile Include="Source\main.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

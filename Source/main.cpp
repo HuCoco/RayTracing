@@ -1,8 +1,9 @@
 #pragma once
-#include "Core/BRDF.h"
+#include <Image/Image.h>
 
 int main()
 {
-    auto a = ApproximateSpecularIBL(Vec3f(1.0f,1.0f,1.0f), 1.0f, Vec3f(0.0f,1.0f,0.0f), Vec3f(0.5f,0.5f,0.0f));
+    char* data = new char[128 * 128 * 4];
+    Image::WriteImage("C:/Users/Huke/Desktop/ImageTest/test.tga", 128, 128, data, IMAGE_FORMAT::TGA_FORMAT);
     return 0;
 }

@@ -58,5 +58,12 @@
 #undef max
 #endif
 
+#ifdef far
+#undef far
+#endif
+
+#ifdef near
+#undef near
+#endif
 
 #define ASSERT_MSG(exp,msg) assert(exp)

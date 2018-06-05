@@ -221,8 +221,15 @@ public:
         return SIMD4F_DOT3_SCALAR(SIMD4F_ULOAD3(lhs.Data()), SIMD4F_ULOAD3(rhs.Data()));
     }
 
+    friend Vec3f operator* (float s, const Vec3f &v);
+
 public:
     float x;
     float y;
     float z;
 };
+
+inline Vec3f operator* (float s, const Vec3f &v)
+{
+    return Vec<float, 3>(SIMD4F_MUL(SIMD4F_ULOAD3(v.Data()), SIMD4F_SET(s)));
+}

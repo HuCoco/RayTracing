@@ -18,68 +18,70 @@ void Image::WriteImage(const char* filename, uint32_t width, uint32_t height, vo
 
 
 // Create TGA format image
+#pragma pack(push,1)
 
-struct TGAFileHeader
+struct TGA_Header 
 {
     uint8_t id_length;
     uint8_t color_map_type;
-    uint8_t image_type;
-
-    struct 
+    uint8_t img_map_type;
+    struct TGA_color_map_spec 
     {
-        uint16_t color_map_address;
-        uint16_t color_map_count;
-        uint8_t color_map_element_size;
-    } color_map_specification;
-
-    struct 
+        uint16_t first_entry_index;
+        uint16_t length;
+        uint8_t entry_size;
+    } color_map_spec;
+    struct TGA_img_spec 
     {
-        uint16_t origin_x;
-        uint16_t origin_y;
+        uint16_t x_orig;
+        uint16_t y_orig;
         uint16_t width;
         uint16_t height;
-        uint8_t depth;
-        uint8_t desc;
-    } image_specification;
+        uint8_t pixel_depth;//bits per pixel
+        uint8_t img_desc;
+    } img_spec;
 };
-
-
-struct TGAFileFooter
+struct TGA_Footer 
 {
-    uint32_t a;
-    uint32_t b;
-    char signal[16];
-    const char end = '.';
-    const char eof = '\0';
+    //TODO: declare footer
 };
+
+struct TGA_Extension 
+{
+    //TODO: declare extension
+};
+#pragma pack(pop)
+
 void Image::WriteImageTGA(const char* filename, uint32_t width, uint32_t height, void* data)
 {
-    std::ofstream file(filename);
-    TGAFileHeader file_content_header;
-    file_content_header.id_length = 0;
-    file_content_header.color_map_type = 0;
-    file_content_header.image_type = 1;
-    file_content_header.color_map_specification.color_map_address = 0;
-    file_content_header.color_map_specification.color_map_count = 0;
-    file_content_header.color_map_specification.color_map_element_size = 0;
-    file_content_header.image_specification.origin_x = 0;
-    file_content_header.image_specification.origin_y = 0;
-    file_content_header.image_specification.width = width;
-    file_content_header.image_specification.height = height;
-    file_content_header.image_specification.depth = 32;
-    file_content_header.image_specification.desc |= 0b101000;
+    int numComponents = 4;
+    char* tga_buffer = new char[sizeof(TGA_Header) + width * height * numComponents];
+    char* img_buffer = tga_buffer + sizeof(TGA_Header);
+    size_t a = sizeof(TGA_Header);
+    TGA_Header* header = reinterpret_cast<TGA_Header*>(tga_buffer);
+    memset(header, 0, sizeof(TGA_Header));
+    header->id_length = 0;
+    header->color_map_type = 0;
+    header->img_map_type = 2;
+    header->img_spec.x_orig = 0;
+    header->img_spec.y_orig = 0;
+    header->img_spec.width = width;
+    header->img_spec.height = height;
+    header->img_spec.pixel_depth = numComponents * 8;
+    header->img_spec.img_desc = 0b00001111;
+    memcpy(img_buffer, data, width * height * numComponents);
 
-    TGAFileFooter file_content_footer;
-    file_content_footer.a = 0;
-    file_content_footer.b = 0;
+    std::ofstream outputfile;
 
-    size_t file_size = sizeof(TGAFileHeader) + (width * height * 4) + sizeof(TGAFileFooter);
-    char* image_data = new char[file_size];
+    outputfile.open(filename, std::ios_base::out | std::ios_base::binary);
 
-    memcpy(image_data, &file_content_header, sizeof(TGAFileHeader));
-    memcpy(image_data + sizeof(TGAFileHeader), data, width * height * 4);
-    memcpy(image_data + sizeof(TGAFileHeader) + width * height * 4, &file_content_footer, sizeof(TGAFileFooter));
-    file.write(image_data, file_size);
-    file.close();
+    if (outputfile.is_open())
+    {
+        outputfile.write(tga_buffer, sizeof(TGA_Header) + width * height * numComponents);
+        outputfile.close();
+    }
+
+
+    delete tga_buffer;
 }
 

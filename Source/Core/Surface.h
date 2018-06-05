@@ -6,6 +6,7 @@
 
 struct SurfaceHitResult
 {
+    float t;
     Vec3f position;
     Vec3f normal;
     Material* material;
@@ -13,6 +14,7 @@ struct SurfaceHitResult
 
 class Surface
 {
+public:
     virtual bool Hit(const Ray& ray, float min, float max, SurfaceHitResult& result) const = 0;
     virtual bool ShadowHit(const Ray &r, float tmin, float tmax) const
     {

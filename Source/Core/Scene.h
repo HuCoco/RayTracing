@@ -5,7 +5,7 @@
 class Scene
 {
 
-private:
+public:
     std::vector<Surface*> m_surfaces;
     std::vector<Material*> m_materials;
     std::vector<Light*> m_Lights;

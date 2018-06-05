@@ -120,6 +120,9 @@
     <ClInclude Include="Source\Core\Camera.h">
       <Filter>Core\Camera</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Core\RayTracer.h">
+      <Filter>Core</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\main.cpp" />
@@ -149,6 +152,9 @@
     </ClCompile>
     <ClCompile Include="Source\Core\Camera.cpp">
       <Filter>Core\Camera</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\RayTracer.cpp">
+      <Filter>Core</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

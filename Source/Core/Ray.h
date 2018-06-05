@@ -14,6 +14,9 @@ public:
 
     Vec3f GetDestPostion(float t) const;
 
+    inline Ray& Normalized() { mDirection.Normalized(); return *this; }
+    inline Ray& MoveForward(float t) { mSource += mDirection * t; return *this; }
+
 private:
     Vec3f mSource{ 0.0f,0.0f,0.0f };
     Vec3f mDirection{ 0.0f,0.0f,0.0f };

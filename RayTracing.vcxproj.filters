@@ -25,6 +25,15 @@
     <Filter Include="Image">
       <UniqueIdentifier>{c8a92725-3b03-4176-b0c5-37848ca02dbc}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Core\Light">
+      <UniqueIdentifier>{557d8cf8-b479-4021-ae30-f9ccaaef7fd3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core\Scene">
+      <UniqueIdentifier>{22877801-9853-4857-9db4-d5cf7a5d5b26}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core\Camera">
+      <UniqueIdentifier>{0c7edf32-2fe3-4da0-869b-383b2c4eb67c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Math\Accel\MathAccel.h">
@@ -102,6 +111,15 @@
     <ClInclude Include="Source\Image\Image.h">
       <Filter>Image</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Core\Scene.h">
+      <Filter>Core\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\Light.h">
+      <Filter>Core\Light</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\Camera.h">
+      <Filter>Core\Camera</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\main.cpp" />
@@ -122,6 +140,15 @@
     </ClCompile>
     <ClCompile Include="Source\Image\Image.cpp">
       <Filter>Image</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\Scene.cpp">
+      <Filter>Core\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\Light.cpp">
+      <Filter>Core\Light</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\Camera.cpp">
+      <Filter>Core\Camera</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

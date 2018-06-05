@@ -17,6 +17,6 @@ private:
     Vec3f m_ImageOrigin{ 0.0f,0.0f,0.0f };
     Vec3f m_ImageU{ 0.0f,0.0f,0.0f };
     Vec3f m_ImageV{ 0.0f,0.0f,0.0f };
-    uint32_t m_ImageWidth{ 0.0f };
-    uint32_t m_ImageHeight{ 0.0f };
+    uint32_t m_ImageWidth{ 0 };
+    uint32_t m_ImageHeight{ 0 };
 };

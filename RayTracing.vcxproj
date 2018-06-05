@@ -120,8 +120,11 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Source\Core\BRDF.h" />
+    <ClInclude Include="Source\Core\Camera.h" />
+    <ClInclude Include="Source\Core\Light.h" />
     <ClInclude Include="Source\Core\Material.h" />
     <ClInclude Include="Source\Core\Ray.h" />
+    <ClInclude Include="Source\Core\Scene.h" />
     <ClInclude Include="Source\Core\Sphere.h" />
     <ClInclude Include="Source\Core\Surface.h" />
     <ClInclude Include="Source\Image\Image.h" />
@@ -147,8 +150,11 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Core\BRDF.cpp" />
+    <ClCompile Include="Source\Core\Camera.cpp" />
+    <ClCompile Include="Source\Core\Light.cpp" />
     <ClCompile Include="Source\Core\Material.cpp" />
     <ClCompile Include="Source\Core\Ray.cpp" />
+    <ClCompile Include="Source\Core\Scene.cpp" />
     <ClCompile Include="Source\Core\Sphere.cpp" />
     <ClCompile Include="Source\Core\Surface.cpp" />
     <ClCompile Include="Source\Image\Image.cpp" />

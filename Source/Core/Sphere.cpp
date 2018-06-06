@@ -1,8 +1,10 @@
 #include "Sphere.h"
 #include <Core/Ray.h>
-Sphere::Sphere(const Vec3f& center, float radius)
-    : mCenter(center)
+Sphere::Sphere(const Vec3f& center, float radius,Material* material)
+    : Surface(material)
+    , mCenter(center)
     , mRadius(radius)
+
 {
 
 }

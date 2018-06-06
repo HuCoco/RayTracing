@@ -5,5 +5,6 @@
 
 class RayTracer
 {
-    static FColor TraceRay(const Ray& ray, const Scene& scene, uint32_t numRefection);
+public:
+    static Vec3f TraceRay(const Ray& ray, const Scene& scene, uint32_t numRefection);
 };

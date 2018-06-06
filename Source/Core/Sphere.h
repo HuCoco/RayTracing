@@ -4,7 +4,7 @@
 class Sphere : public Surface
 {
 public:
-    Sphere(const Vec3f& center, float radius);
+    Sphere(const Vec3f& center, float radius, Material* material);
     virtual bool Hit(const Ray& ray, float min, float max, SurfaceHitResult& result) const override;
     virtual bool ShadowHit(const Ray &r, float tmin, float tmax) const override;
 private:

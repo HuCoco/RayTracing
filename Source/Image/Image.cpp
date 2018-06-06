@@ -2,6 +2,19 @@
 #include <fstream>
 
 
+Image::Image(uint32_t w, uint32_t h)
+    : mWidth(w)
+    , mHeight(h)
+{
+    mData = new UColor[mWidth * mHeight];
+}
+
+void Image::SetPixel(uint32_t x, uint32_t y, Vec3f data)
+{
+    assert(x >= 0 && x < mWidth && y >= 0 && y < mHeight);
+    mData[y * mWidth + x] = data;
+}
+
 void Image::WriteImage(const char* filename, uint32_t width, uint32_t height, void* data, IMAGE_FORMAT format)
 {
     switch (format)

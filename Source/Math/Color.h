@@ -1,6 +1,7 @@
 // Copyright 2017-2018 Hu Ke. All rights reserved.
 #pragma once
 #include <Platform/Platform.h>
+#include <Math/Vec3f.h>
 class FColor;
 class UColor;
 
@@ -25,14 +26,6 @@ public:
 
     }
 
-    FColor(const UColor& c)
-        : r(static_cast<float>(c.r) / 255.0f)
-        , g(static_cast<float>(c.g) / 255.0f)
-        , b(static_cast<float>(c.b) / 255.0f)
-        , a(static_cast<float>(c.a) / 255.0f)
-    {
-
-    }
 
     
 
@@ -47,14 +40,8 @@ public:
 class UColor
 {
 public:
-    UColor(float cr, float cg, float cb, float ca)
-        : r(cr)
-        , g(cg)
-        , b(cb)
-        , a(ca)
-    {
+    UColor() = default;
 
-    }
 
     UColor(const UColor& c)
         : r(c.r)
@@ -65,13 +52,21 @@ public:
 
     }
 
-    UColor(const FColor& c)
-        : r(static_cast<uint8_t>(c.r * 255.0f))
-        , g(static_cast<uint8_t>(c.g * 255.0f))
-        , b(static_cast<uint8_t>(c.b * 255.0f))
-        , a(static_cast<uint8_t>(c.a * 255.0f))
+    UColor(const Vec3f& c)
+        : r(static_cast<uint8_t>(c.x * 255.0f))
+        , g(static_cast<uint8_t>(c.y * 255.0f))
+        , b(static_cast<uint8_t>(c.z * 255.0f))
+        , a(static_cast<uint8_t>(255))
     {
 
+    }
+
+    void operator=(const Vec3f& c)
+    {
+        r = (static_cast<uint8_t>(c.x * 255.0f));
+        g = (static_cast<uint8_t>(c.y * 255.0f));
+        b = (static_cast<uint8_t>(c.z * 255.0f));
+        a = (static_cast<uint8_t>(255));
     }
 
 public:

@@ -1,7 +1,23 @@
 #include "RayTracer.h"
 
+static Vec3f Reflect(const Vec3f& L, const Vec3f& N)
+{
+    return (2.0f * Vec3f::Dot(N, L)) * N - L;
+}
 
-FColor RayTracer::TraceRay(const Ray& ray, const Scene& scene, uint32_t numRefection)
+static Vec3f computePhongLighting(const Vec3f &L, const Vec3f &N, const Vec3f &V,
+    const Material &mat, const Light &ptLight)
+{
+    Vec3f NN = (Vec3f::Dot(L, N) >= 0.0) ? N : -N;
+
+    Vec3f R = Reflect(L, NN);
+    float NL = (float)Vec3f::Dot(NN, L);
+    float RVn = pow((float)Vec3f::Dot(R, V), (float)mat.n);
+
+    return ptLight.color * (mat.k_d * NL + mat.k_r * RVn);
+}
+
+Vec3f RayTracer::TraceRay(const Ray& ray, const Scene& scene, uint32_t numRefection)
 {
     Ray uRay(ray);
     uRay.Normalized();
@@ -25,20 +41,20 @@ FColor RayTracer::TraceRay(const Ray& ray, const Scene& scene, uint32_t numRefec
 
     if (!hasHitSomething)
     {
-        return FColor(0.0f, 0.0f, 0.0f, 1.0f);
+        return Vec3f(0.0f, 0.0f, 0.0f);
     }
 
     nearestHitResult.normal.Normalized();
     Vec3f N = nearestHitResult.normal;
     Vec3f V = -uRay.GetDirection();
 
-    FColor result(0.0f, 0.0f, 0.0f, 1.0f);
+    Vec3f result(0.0f, 0.0f, 0.0f);
 
     bool shadow = true;
     auto LightList = scene.m_Lights;
     for (auto iter = LightList.begin(); iter != LightList.end(); iter++)
     {
-        Vec3f Lin = (*iter)->position - nearestHitResult.position;
+        Vec3f Lin = (*iter).position - nearestHitResult.position;
         float MaxLength = (Lin).GetLength();
         float invLen = 1.0f / MaxLength;
         Vec3f L = (Lin)*invLen;
@@ -59,6 +75,7 @@ FColor RayTracer::TraceRay(const Ray& ray, const Scene& scene, uint32_t numRefec
                 continue;
             }
         }
+        result += computePhongLighting(L, N, V, *nearestHitResult.material, (*iter));
         //result += computePhongLighting(...);
         //result += computeBRDF(...);
     }
@@ -66,9 +83,9 @@ FColor RayTracer::TraceRay(const Ray& ray, const Scene& scene, uint32_t numRefec
 
     if (numRefection > 0)
     {
-        //Vec3f dir;// = mirrorReflect(V, N);
-        //Ray rRay(nearestHitResult.position, dir);
-        //result += color;//nearestHitRec.mat_ptr->k_rg * TraceRay(rRay, scene, --reflectLevels, hasShadow);
+        Vec3f dir = Reflect(V, N);
+        Ray rRay(nearestHitResult.position, dir);
+        result += nearestHitResult.material->k_rg * TraceRay(rRay, scene, --numRefection);
     }
 
     return result;

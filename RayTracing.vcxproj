@@ -119,16 +119,21 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="Source\Core\BRDF.h" />
     <ClInclude Include="Source\Core\Camera.h" />
+    <ClInclude Include="Source\Core\Color.h" />
+    <ClInclude Include="Source\Core\Image.h" />
+    <ClInclude Include="Source\Core\ImageIO.h" />
     <ClInclude Include="Source\Core\Light.h" />
     <ClInclude Include="Source\Core\Material.h" />
+    <ClInclude Include="Source\Core\Plane.h" />
     <ClInclude Include="Source\Core\Ray.h" />
-    <ClInclude Include="Source\Core\RayTracer.h" />
+    <ClInclude Include="Source\Core\Raytrace.h" />
     <ClInclude Include="Source\Core\Scene.h" />
     <ClInclude Include="Source\Core\Sphere.h" />
     <ClInclude Include="Source\Core\Surface.h" />
-    <ClInclude Include="Source\Image\Image.h" />
+    <ClInclude Include="Source\Core\Triangle.h" />
+    <ClInclude Include="Source\Core\Util.h" />
+    <ClInclude Include="Source\Core\Vector3d.h" />
     <ClInclude Include="Source\Math\Accel\MathAccel.h" />
     <ClInclude Include="Source\Math\Accel\MathAccelGeneral.h" />
     <ClInclude Include="Source\Math\Accel\MathAccelSSE.h" />
@@ -150,17 +155,15 @@
     <ClInclude Include="Source\Platform\PlatformDefines.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Source\Core\BRDF.cpp" />
     <ClCompile Include="Source\Core\Camera.cpp" />
-    <ClCompile Include="Source\Core\Light.cpp" />
-    <ClCompile Include="Source\Core\Material.cpp" />
-    <ClCompile Include="Source\Core\Ray.cpp" />
-    <ClCompile Include="Source\Core\RayTracer.cpp" />
-    <ClCompile Include="Source\Core\Scene.cpp" />
+    <ClCompile Include="Source\Core\Image.cpp" />
+    <ClCompile Include="Source\Core\ImageIO.cpp" />
+    <ClCompile Include="Source\Core\Main.cpp" />
+    <ClCompile Include="Source\Core\Plane.cpp" />
+    <ClCompile Include="Source\Core\Raytrace.cpp" />
     <ClCompile Include="Source\Core\Sphere.cpp" />
-    <ClCompile Include="Source\Core\Surface.cpp" />
-    <ClCompile Include="Source\Image\Image.cpp" />
-    <ClCompile Include="Source\main.cpp" />
+    <ClCompile Include="Source\Core\Triangle.cpp" />
+    <ClCompile Include="Source\Core\Util.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

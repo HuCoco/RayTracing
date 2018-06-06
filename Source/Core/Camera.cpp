@@ -1,26 +1,29 @@
+#include <cmath>
+#include <cassert>
+#include "Vector3d.h"
 #include "Camera.h"
 
-void Camera::Initialize(const Vec3f& eye, const Vec3f& lookAt, const Vec3f& up,
-    float left, float right, float bottom, float top, float near,
-    uint32_t width, uint32_t height)
+using namespace std;
+
+
+Camera &Camera::setCamera( 
+			    const Vector3d &eye, const Vector3d &lookAt, const Vector3d &upVector,
+		        double left, double right, double bottom, double top, double near,
+			    int image_width, int image_height )
 {
-    m_ImageWidth = width;
-    m_ImageHeight = height;
+	assert( image_width > 0 && image_height > 0 );
+	mImageWidth = image_width;
+	mImageHeight = image_height;
 
-    m_Cop = eye;
-    Vec3f cop_n = (eye - lookAt).GetNormalized();
-    Vec3f cop_u = Vec3f::Cross(up.GetNormalized(), cop_n);
-    Vec3f cop_v = Vec3f::Cross(cop_n, cop_u);
+	mCOP = eye;
+	Vector3d cop_n = (eye - lookAt).unitVector();
+	Vector3d cop_u = cross( upVector.unitVector(), cop_n );
+	Vector3d cop_v = cross( cop_n, cop_u );
 
-    m_ImageOrigin = m_Cop + (left * cop_u) + (bottom * cop_v) + (-near * cop_n);
+	mImageOrigin = mCOP + ( left * cop_u ) + ( bottom * cop_v ) + ( -near * cop_n );
 
-    m_ImageU = (right - left) * cop_u;
-    m_ImageV = (top - bottom) * cop_v;
-}
-
-Ray Camera::GetRay(float pixel_x, float pixel_y)
-{
-    Vec3f imgPos = m_ImageOrigin + (pixel_x / m_ImageWidth) * m_ImageU + (pixel_y / m_ImageHeight) * m_ImageV;
-    return Ray(m_Cop, imgPos - m_Cop);
+	mImageU = (right - left) * cop_u;
+	mImageV = (top - bottom) * cop_v;
+	return (*this);
 }
 

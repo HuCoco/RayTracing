@@ -1,25 +1,62 @@
-#pragma once
-#include <Math/Vec3f.h>
+#ifndef _RAY_H_
+#define _RAY_H_
 
-class Ray
+#include <iostream>
+#include "Vector3d.h"
+
+using namespace std;
+
+
+class Ray  
 {
 public:
-    Ray() = default;
-    Ray(const Vec3f& source, const Vec3f& direction);
+    
+// Constructors
 
-    inline void SetSource(const Vec3f& source) { mSource = source; }
-    inline void SetDirection(const Vec3f& direction) { mDirection = direction; }
-    inline Vec3f GetSource() const { return mSource; }
-    inline Vec3f GetDirection() const { return mDirection; }
+    Ray() {}
 
-    Vec3f GetDestPostion(float t) const;
+    Ray( const Vector3d &origin, const Vector3d &direction ) 
+		{ data[0] = origin; data[1] = direction;  }
 
-    inline Ray& Normalized() { mDirection.Normalized(); return *this; }
-    inline Ray& MoveForward(float t) { mSource += mDirection * t; return *this; }
 
+// Data setting and reading.
+
+    Ray &setRay( const Vector3d &origin, const Vector3d &direction ) 
+		{ data[0] = origin; data[1] = direction; return (*this); }
+
+    Ray &setOrigin( const Vector3d &origin ) { data[0] = origin; return (*this); }
+	Ray &setDirection( const Vector3d &direction ) { data[1] = direction; return (*this); }
+
+    Vector3d origin() const { return data[0]; }
+    Vector3d direction() const { return data[1]; }
+
+
+// Other functions.
+
+    Vector3d pointAtParam( double t ) const { return data[0] + t * data[1]; }
+
+	Ray &makeUnitDirection()
+	{
+		data[1].makeUnitVector();
+		return (*this);
+	}
+
+	Ray &moveOriginForward( double delta_t )
+	{
+		data[0] += delta_t * data[1];
+		return (*this);
+	}
 
 private:
-    Vec3f mSource{ 0.0f,0.0f,0.0f };
-    Vec3f mDirection{ 0.0f,0.0f,0.0f };
-};
 
+    Vector3d data[2];
+
+}; // Ray
+
+
+
+inline ostream &operator<< ( ostream &os, const Ray &r ) 
+	{ return ( os << "(" << r.origin() << ") + t("  << r.direction() << ")" ); }
+
+
+#endif // _RAY_H_

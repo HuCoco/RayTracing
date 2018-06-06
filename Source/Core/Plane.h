@@ -1,19 +1,32 @@
-#ifndef _SPHERE_H_  
-#define _SPHERE_H_
+#ifndef _PLANE_H_  
+#define _PLANE_H_
 
 #include "Surface.h"
 
 
-class Sphere : public Surface 
+class Plane : public Surface 
 {
 public:
 
-    Vector3d center;
-    double radius;
+	// The plane equation is Ax + By + Cz + D = 0.
+    double A, B, C, D;
 
 
-	Sphere( const Vector3d &theCenter, double theRadius, const Material *mat_ptr )
-		{ center = theCenter;  radius = theRadius;  matp = mat_ptr; }
+	Plane( double A_, double B_, double C_, double D_, const Material *mat_ptr )
+	{ 
+		A = A_;  B = B_;  C = C_;  D = D_;  
+		matp = mat_ptr; 
+	}
+
+
+	Plane( const Vector3d &normal, const Vector3d &pointOnPlane, const Material *mat_ptr )
+	{
+		A = normal.x();
+		B = normal.y();
+		C = normal.z();
+		D = -dot( pointOnPlane, normal );
+		matp = mat_ptr; 
+	}
 
 
     virtual bool hit( 
@@ -32,4 +45,4 @@ public:
 
 };
 
-#endif // _SPHERE_H_
+#endif // _PLANE_H_

@@ -1,16 +1,30 @@
-#pragma once
-#include <Platform/Platform.h>
-#include <Core/Surface.h>
-#include <Core/Light.h>
-#include <Core/Camera.h>
-class Scene
+#ifndef _SCENE_H_
+#define _SCENE_H_
+
+#include "Image.h"
+#include "Camera.h"
+#include "Material.h"
+#include "Light.h"
+#include "Surface.h"
+
+
+struct Scene
 {
+	SurfacePtr *surfacep;	// Array of pointers to surface primitives.
+	int numSurfaces;		// Number of surface primitives in array.
 
-public:
-    std::vector<Surface*> m_surfaces;
-    std::vector<Material> m_materials;
-    std::vector<Light> m_Lights;
+	Material *material;		// Array of materials.
+	int numMaterials;		// Number of materials in array.
 
-    Camera camera;
-  
+	PointLightSource *ptLight;	// Array of point light sources.
+	int numPtLights;			// Number of point light sources in array.
+
+	AmbientLightSource amLight;	// The global ambient light source.
+
+	Color backgroundColor;		// Use this color if ray hits nothing.
+
+	Camera camera;	// The camera.
 };
+
+
+#endif // _SCENE_H_

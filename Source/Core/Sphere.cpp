@@ -1,51 +1,71 @@
+//============================================================
+// STUDENT NAME: HU KE
+// NUS User ID.: NUSRI1613
+// COMMENTS TO GRADER: 
+// 
+// 
+// ============================================================
+//
+// FILE: Sphere.cpp
+
+
+
+#include <cmath>
 #include "Sphere.h"
-#include <Core/Ray.h>
-Sphere::Sphere(const Vec3f& center, float radius,Material* material)
-    : Surface(material)
-    , mCenter(center)
-    , mRadius(radius)
 
+using namespace std;
+
+
+
+bool Sphere::hit( const Ray &r, double tmin, double tmax, SurfaceHitRecord &rec ) const 
 {
-
-}
-
-bool Sphere::Hit(const Ray& ray, float min, float max, SurfaceHitResult& result) const
-{
-    Vec3f Rd = ray.GetDirection();
-    Vec3f Rs = ray.GetSource();
-    float a = Vec3f::Dot(Rd, Rd);
-    float b = 2.0f + Vec3f::Dot(Rs, Rs);
-    float c = Vec3f::Dot(Rs, Rs) - mRadius * mRadius;
-    float d = b * b - 4 * a * c;
-    if (d < 0.0f)
+    //***********************************************
+    //*********** WRITE YOUR CODE HERE **************
+    Vector3d Rd = r.direction();
+    Vector3d Ro = r.origin() - center;
+    double a = dot(Rd,Rd);
+    double b = 2.0 * dot(Rd, Ro);
+    double c = dot(Ro,Ro) - pow(radius, 2);
+    double d = pow(b, 2) - 4.0 * a * c;
+    if(d < 0)
     {
         return false;
     }
-
-    float t = (-b - sqrt(d)) / (2.0f * a);
-    if (t >= min && t <= max)
+    double t = (-b - sqrt(d)) / (2.0f * a);
+    if ( t >= tmin && t <= tmax )
     {
-        result.position = ray.GetDestPostion(t);
-        result.normal = (Rs + Rd * t) / mRadius;
-        result.material = mMaterial;
+        rec.t = t ;
+        rec.p = r.pointAtParam(t);
+        rec.normal = (Ro + t * Rd) / radius;
+        rec.mat_ptr = matp;
         return true;
     }
-    return false;
+    
+    //***********************************************
+    return false; // You can remove/change this if needed.
 }
 
-bool Sphere::ShadowHit(const Ray &ray, float tmin, float tmax) const
+
+
+
+bool Sphere::shadowHit( const Ray &r, double tmin, double tmax ) const 
 {
-    Vec3f Rd = ray.GetDirection();
-    Vec3f Rs = ray.GetSource();
-    float a = Vec3f::Dot(Rd, Rd);
-    float b = 2.0f + Vec3f::Dot(Rs, Rs);
-    float c = Vec3f::Dot(Rs, Rs) - mRadius * mRadius;
-    float d = b * b - 4 * a * c;
-    if (d < 0.0f)
+    //***********************************************
+    //*********** WRITE YOUR CODE HERE **************
+    Vector3d Rd = r.direction();
+    Vector3d Ro = r.origin() - center;
+    double a = dot(Rd,Rd);
+    double b = 2 * dot(Rd, Ro);
+    double c = dot(Ro,Ro) - pow(radius, 2);
+    double d = pow(b, 2) - 4 * a * c;
+    if(d < 0)
     {
         return false;
     }
-    float t = (-b - sqrt(d)) / (2.0f * a);
-    return (t >= tmin && t <= tmax);
+    double t = (-b - sqrt(d)) / (2 * a);
+
+    //***********************************************
+
+	return (t >= tmin && t <= tmax); // You can remove/change this if needed.
 }
 

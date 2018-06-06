@@ -13,26 +13,8 @@
     <Filter Include="Core">
       <UniqueIdentifier>{7c811f06-8fb7-482e-bef7-4e1a06c54b55}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Core\Ray">
-      <UniqueIdentifier>{ff0c1d95-a49d-4a65-977f-f5166aa9ee72}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Core\Surface">
-      <UniqueIdentifier>{6e172a55-f2fd-419f-ab10-cbd0c0508d55}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Core\Material">
-      <UniqueIdentifier>{234f98c3-152c-4343-89be-95aad55b1b66}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Image">
       <UniqueIdentifier>{c8a92725-3b03-4176-b0c5-37848ca02dbc}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Core\Light">
-      <UniqueIdentifier>{557d8cf8-b479-4021-ae30-f9ccaaef7fd3}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Core\Scene">
-      <UniqueIdentifier>{22877801-9853-4857-9db4-d5cf7a5d5b26}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Core\Camera">
-      <UniqueIdentifier>{0c7edf32-2fe3-4da0-869b-383b2c4eb67c}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -93,67 +75,78 @@
     <ClInclude Include="Source\Platform\Platform.h">
       <Filter>Platform</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Core\BRDF.h">
+    <ClInclude Include="Source\Core\ImageIO.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\Light.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\Material.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\Plane.h">
       <Filter>Core</Filter>
     </ClInclude>
     <ClInclude Include="Source\Core\Ray.h">
-      <Filter>Core\Ray</Filter>
+      <Filter>Core</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Core\Material.h">
-      <Filter>Core\Material</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Core\Surface.h">
-      <Filter>Core\Surface</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Core\Sphere.h">
-      <Filter>Core\Surface</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Image\Image.h">
-      <Filter>Image</Filter>
+    <ClInclude Include="Source\Core\Raytrace.h">
+      <Filter>Core</Filter>
     </ClInclude>
     <ClInclude Include="Source\Core\Scene.h">
-      <Filter>Core\Scene</Filter>
+      <Filter>Core</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Core\Light.h">
-      <Filter>Core\Light</Filter>
+    <ClInclude Include="Source\Core\Sphere.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\Surface.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\Triangle.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\Util.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\Vector3d.h">
+      <Filter>Core</Filter>
     </ClInclude>
     <ClInclude Include="Source\Core\Camera.h">
-      <Filter>Core\Camera</Filter>
+      <Filter>Core</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Core\RayTracer.h">
+    <ClInclude Include="Source\Core\Color.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\Image.h">
       <Filter>Core</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Source\main.cpp" />
-    <ClCompile Include="Source\Core\BRDF.cpp">
+    <ClCompile Include="Source\Core\ImageIO.cpp">
       <Filter>Core</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Core\Ray.cpp">
-      <Filter>Core\Ray</Filter>
+    <ClCompile Include="Source\Core\Main.cpp">
+      <Filter>Core</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Core\Material.cpp">
-      <Filter>Core\Material</Filter>
+    <ClCompile Include="Source\Core\Plane.cpp">
+      <Filter>Core</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Core\Surface.cpp">
-      <Filter>Core\Surface</Filter>
+    <ClCompile Include="Source\Core\Raytrace.cpp">
+      <Filter>Core</Filter>
     </ClCompile>
     <ClCompile Include="Source\Core\Sphere.cpp">
-      <Filter>Core\Surface</Filter>
+      <Filter>Core</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Image\Image.cpp">
-      <Filter>Image</Filter>
+    <ClCompile Include="Source\Core\Triangle.cpp">
+      <Filter>Core</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Core\Scene.cpp">
-      <Filter>Core\Scene</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Core\Light.cpp">
-      <Filter>Core\Light</Filter>
+    <ClCompile Include="Source\Core\Util.cpp">
+      <Filter>Core</Filter>
     </ClCompile>
     <ClCompile Include="Source\Core\Camera.cpp">
-      <Filter>Core\Camera</Filter>
+      <Filter>Core</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Core\RayTracer.cpp">
+    <ClCompile Include="Source\Core\Image.cpp">
       <Filter>Core</Filter>
     </ClCompile>
   </ItemGroup>

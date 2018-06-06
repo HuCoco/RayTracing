@@ -44,7 +44,10 @@ bool Image::writeToFile( const char *filename ) const
 {
 	assert( mWidth > 0 && mHeight > 0 );
 	uchar *bytes = new uchar[ 4 * mWidth * mHeight ];
-
+    int b_offset = 0;
+    int g_offset = mWidth * mHeight;
+    int r_offset = mWidth * mHeight * 2;
+    int a_offset = mWidth * mHeight * 3;
 	for ( int i = 0; i < mWidth * mHeight; i++ )
 	{
 		int r = (int) (256.0 * mData[i].r());
@@ -55,10 +58,10 @@ bool Image::writeToFile( const char *filename ) const
 		if ( b > 255 ) b = 255;
 
 
-		bytes[ 3*i + 0 ] = (uchar)255;
-		bytes[ 3*i + 1 ] = (uchar)255;
-		bytes[ 3*i + 2 ] = (uchar)255;
-        bytes[3 * i + 3] = (uchar) 255;
+		bytes[4*i + 0] = (uchar)b;
+		bytes[4*i + 1] = (uchar)g;
+		bytes[4*i + 2] = (uchar)r;
+        bytes[4*i + 3] = (uchar)255;
 	}
 
 	int status = ImageIO::SaveImageFile( filename, bytes, mWidth, mHeight, 4 );

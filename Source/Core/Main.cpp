@@ -28,6 +28,12 @@
 #include "Scene.h"
 #include "Raytrace.h"
 
+#include "ImGui/imgui.h"
+#include "ImGui/imgui_impl_glfw_gl3.h"
+#include <stdio.h>
+#include <GL/gl3w.h>    // This example is using gl3w to access OpenGL functions (because it is small). You may use glew/glad/glLoadGen/etc. whatever already works for you.
+#include <GLFW/glfw3.h>
+
 using namespace std;
 
 
@@ -101,41 +107,130 @@ void WaitForEnterKeyBeforeExit( void )
     getchar();
 }
 
-
+static void glfw_error_callback(int error, const char* description)
+{
+    fprintf(stderr, "Error %d: %s\n", error, description);
+}
 
 
 int main()
 {
-	atexit( WaitForEnterKeyBeforeExit );
+//	atexit( WaitForEnterKeyBeforeExit );
+//
+//
+//
+//// Define Scene 1.
+//
+//	Scene scene1;
+//	DefineScene1( scene1, imageWidth1, imageHeight1 );
+//
+//// Render Scene 1.
+//
+//	printf( "Render Scene 1...\n" );
+//	RenderImage( "C:/Users/Huke/Desktop/ImageTest/out1.tga", scene1, reflectLevels1, hasShadow1 );
+//	printf( "Image completed.\n" );
+//
+//
+//
+//// Define Scene 2.
+//
+//	Scene scene2;
+//	DefineScene2( scene2, imageWidth2, imageHeight2 );
+//
+//// Render Scene 2.
+//
+//	printf( "Render Scene 2...\n" );
+//	RenderImage( "C:/Users/Huke/Desktop/ImageTest/out2.tga", scene2, reflectLevels2, hasShadow2 );
+//	printf( "Image completed.\n" );
+//
+//
+//	printf( "All done.\n" );
 
 
+    glfwSetErrorCallback(glfw_error_callback);
+    if (!glfwInit())
+        return 1;
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
+    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-// Define Scene 1.
+    GLFWwindow* window = glfwCreateWindow(1280, 720, "ImGui GLFW+OpenGL3 example", NULL, NULL);
+    glfwMakeContextCurrent(window);
+    glfwSwapInterval(1); // Enable vsync
+    gl3wInit();
 
-	Scene scene1;
-	DefineScene1( scene1, imageWidth1, imageHeight1 );
+    IMGUI_CHECKVERSION();
+    ImGui::CreateContext();
+    ImGuiIO& io = ImGui::GetIO(); (void)io;
 
-// Render Scene 1.
+    ImGui_ImplGlfwGL3_Init(window, true);
 
-	printf( "Render Scene 1...\n" );
-	RenderImage( "C:/Users/Huke/Desktop/ImageTest/out1.tga", scene1, reflectLevels1, hasShadow1 );
-	printf( "Image completed.\n" );
+    ImGui::StyleColorsDark();
 
+    io.Fonts->AddFontFromFileTTF("Resource/Fonts/Roboto-Medium.ttf", 16.0f);
 
+    bool show_demo_window = true;
+    bool show_another_window = false;
+    ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 
-// Define Scene 2.
+    while (!glfwWindowShouldClose(window))
+    {
+        glfwPollEvents();
+        ImGui_ImplGlfwGL3_NewFrame();
 
-	Scene scene2;
-	DefineScene2( scene2, imageWidth2, imageHeight2 );
+        {
+            static float f = 0.0f;
+            static int counter = 0;
+            ImGui::Text("Hello, world!");                           // Display some text (you can use a format string too)
+            ImGui::SliderFloat("float", &f, 0.0f, 1.0f);            // Edit 1 float using a slider from 0.0f to 1.0f    
+            ImGui::ColorEdit3("clear color", (float*)&clear_color); // Edit 3 floats representing a color
 
-// Render Scene 2.
+            ImGui::Checkbox("Demo Window", &show_demo_window);      // Edit bools storing our windows open/close state
+            ImGui::Checkbox("Another Window", &show_another_window);
 
-	printf( "Render Scene 2...\n" );
-	RenderImage( "C:/Users/Huke/Desktop/ImageTest/out2.tga", scene2, reflectLevels2, hasShadow2 );
-	printf( "Image completed.\n" );
+            if (ImGui::Button("Button"))                            // Buttons return true when clicked (NB: most widgets return true when edited/activated)
+                counter++;
+            ImGui::SameLine();
+            ImGui::Text("counter = %d", counter);
 
+            ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+        }
 
-	printf( "All done.\n" );
+        // 2. Show another simple window. In most cases you will use an explicit Begin/End pair to name your windows.
+        if (show_another_window)
+        {
+            ImGui::Begin("Another Window", &show_another_window);
+            ImGui::Text("Hello from another window!");
+            if (ImGui::Button("Close Me"))
+                show_another_window = false;
+            ImGui::End();
+        }
+
+        // 3. Show the ImGui demo window. Most of the sample code is in ImGui::ShowDemoWindow(). Read its code to learn more about Dear ImGui!
+        if (show_demo_window)
+        {
+            ImGui::SetNextWindowPos(ImVec2(650, 20), ImGuiCond_FirstUseEver); // Normally user code doesn't need/want to call this because positions are saved in .ini file anyway. Here we just want to make the demo initial state a bit more friendly!
+            ImGui::ShowDemoWindow(&show_demo_window);
+        }
+
+        // Rendering
+        int display_w, display_h;
+        glfwGetFramebufferSize(window, &display_w, &display_h);
+        glViewport(0, 0, display_w, display_h);
+        glClearColor(clear_color.x, clear_color.y, clear_color.z, clear_color.w);
+        glClear(GL_COLOR_BUFFER_BIT);
+        ImGui::Render();
+        ImGui_ImplGlfwGL3_RenderDrawData(ImGui::GetDrawData());
+        glfwSwapBuffers(window);
+    }
+
+    // Cleanup
+    ImGui_ImplGlfwGL3_Shutdown();
+    ImGui::DestroyContext();
+
+    glfwDestroyWindow(window);
+    glfwTerminate();
+
 	return 0;
 }
 

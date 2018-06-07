@@ -16,6 +16,12 @@
     <Filter Include="Image">
       <UniqueIdentifier>{c8a92725-3b03-4176-b0c5-37848ca02dbc}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ImGui">
+      <UniqueIdentifier>{0868eb36-832f-48b8-a31a-65adba145b32}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ImGui\gl3w">
+      <UniqueIdentifier>{d9689c5f-f667-4f3b-9703-86245f099272}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Math\Accel\MathAccel.h">
@@ -120,6 +126,24 @@
     <ClInclude Include="Source\Core\Image.h">
       <Filter>Core</Filter>
     </ClInclude>
+    <ClInclude Include="Source\ImGui\imconfig.h">
+      <Filter>ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\ImGui\imgui.h">
+      <Filter>ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\ImGui\imgui_internal.h">
+      <Filter>ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\ImGui\imgui_impl_glfw_gl3.h">
+      <Filter>ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="Extension\gl3w\GL\gl3w.h">
+      <Filter>ImGui\gl3w</Filter>
+    </ClInclude>
+    <ClInclude Include="Extension\gl3w\GL\glcorearb.h">
+      <Filter>ImGui\gl3w</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Core\ImageIO.cpp">
@@ -148,6 +172,21 @@
     </ClCompile>
     <ClCompile Include="Source\Core\Image.cpp">
       <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\ImGui\imgui.cpp">
+      <Filter>ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\ImGui\imgui_demo.cpp">
+      <Filter>ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\ImGui\imgui_draw.cpp">
+      <Filter>ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\ImGui\imgui_impl_glfw_gl3.cpp">
+      <Filter>ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="Extension\gl3w\GL\gl3w.c">
+      <Filter>ImGui\gl3w</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

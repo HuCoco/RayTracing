@@ -65,7 +65,7 @@ public:
 
 	// Write image to a file. Returns true iff successful. 
 	bool writeToFile( const char *filename ) const;
-
+    void CreateTextureData(void* data);
 
 private:
 

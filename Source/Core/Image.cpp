@@ -69,3 +69,23 @@ bool Image::writeToFile( const char *filename ) const
 	delete[] bytes;
 	return ( status == 1 );
 }
+
+void Image::CreateTextureData(void* data)
+{
+    uchar* pData = (uchar*)data;
+    for (int i = 0; i < mWidth * mHeight; i++)
+    {
+        int r = (int)(256.0 * mData[i].r());
+        if (r > 255) r = 255;
+        int g = (int)(256.0 * mData[i].g());
+        if (g > 255) g = 255;
+        int b = (int)(256.0 * mData[i].b());
+        if (b > 255) b = 255;
+
+
+        pData[4 * i + 0] = (uchar)r;
+        pData[4 * i + 1] = (uchar)g;
+        pData[4 * i + 2] = (uchar)b;
+        pData[4 * i + 3] = (uchar)255;
+    }
+}

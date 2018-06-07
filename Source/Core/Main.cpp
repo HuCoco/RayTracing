@@ -38,8 +38,8 @@ using namespace std;
 
 
 // Constants for Scene 1.
-static const int imageWidth1 = 640;
-static const int imageHeight1 = 480;
+static const int imageWidth1 = 512;
+static const int imageHeight1 = 512;
 static const int reflectLevels1 = 2;  // 0 -- object does not reflect scene.
 static const int hasShadow1 = true;
 
@@ -49,8 +49,7 @@ static const int imageHeight2 = 480;
 static const int reflectLevels2 = 2;  // 0 -- object does not reflect scene.
 static const int hasShadow2 = true;
 
-
-
+Image gImage;
 
 ///////////////////////////////////////////////////////////////////////////
 // Raytrace the whole image of the scene and write it to a file.
@@ -61,8 +60,8 @@ void RenderImage( const char *imageFilename, const Scene &scene, int reflectLeve
 	int imgWidth = scene.camera.getImageWidth();
 	int imgHeight = scene.camera.getImageHeight();
 
-	Image image( imgWidth, imgHeight );	// To store the result of ray tracing.
-
+	//Image image( imgWidth, imgHeight );	// To store the result of ray tracing.
+    gImage.setImage(imgWidth, imgWidth);
 	double startTime = Util::GetCurrRealTime();
 	double startCPUTime = Util::GetCurrCPUTime();
 
@@ -77,7 +76,7 @@ void RenderImage( const char *imageFilename, const Scene &scene, int reflectLeve
 			Ray ray = scene.camera.getRay( pixelPosX, pixelPosY );
 			Color pixelColor = Raytrace::TraceRay( ray, scene, reflectLevels, hasShadow );
 			pixelColor.clamp();
-			image.setPixel( x, y, pixelColor );
+            gImage.setPixel( x, y, pixelColor );
 		}
 		// printf( "%d ", y );
 	}
@@ -87,7 +86,7 @@ void RenderImage( const char *imageFilename, const Scene &scene, int reflectLeve
 	printf( "Real time taken = %.1f sec\n", stopTime - startTime ); 
 
 	// Write image to file.
-	image.writeToFile( imageFilename );
+	//image.writeToFile( imageFilename );
 }
 
 
@@ -119,16 +118,16 @@ int main()
 //
 //
 //
-//// Define Scene 1.
-//
-//	Scene scene1;
-//	DefineScene1( scene1, imageWidth1, imageHeight1 );
-//
-//// Render Scene 1.
-//
-//	printf( "Render Scene 1...\n" );
-//	RenderImage( "C:/Users/Huke/Desktop/ImageTest/out1.tga", scene1, reflectLevels1, hasShadow1 );
-//	printf( "Image completed.\n" );
+// Define Scene 1.
+
+	Scene scene1;
+	DefineScene1( scene1, imageWidth1, imageHeight1 );
+
+// Render Scene 1.
+
+	printf( "Render Scene 1...\n" );
+	RenderImage( "C:/Users/Huke/Desktop/ImageTest/out1.tga", scene1, reflectLevels1, hasShadow1 );
+	printf( "Image completed.\n" );
 //
 //
 //
@@ -173,6 +172,15 @@ int main()
     bool show_another_window = false;
     ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 
+    uchar* tex_data = new uchar[imageWidth1 * imageHeight1 * 4];
+    gImage.CreateTextureData(tex_data);
+    GLuint texture;
+    glGenTextures(1, &texture);
+    glBindTexture(GL_TEXTURE_2D, texture);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, imageWidth1, imageHeight1, 0, GL_RGBA, GL_UNSIGNED_BYTE, tex_data);
+    glGenerateMipmap(GL_TEXTURE_2D);
+    glBindTexture(GL_TEXTURE_2D, 0);
+
     while (!glfwWindowShouldClose(window))
     {
         glfwPollEvents();
@@ -194,6 +202,14 @@ int main()
             ImGui::Text("counter = %d", counter);
 
             ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+
+            
+            ImTextureID my_tex_id = (ImTextureID)texture;//io.Fonts->TexID;
+            float my_tex_w = imageWidth1;//(float)io.Fonts->TexWidth;
+            float my_tex_h = imageHeight1;//(float)io.Fonts->TexHeight;
+
+            ImGui::Text("%.0fx%.0f", my_tex_w, my_tex_h);
+            ImGui::Image(my_tex_id, ImVec2(my_tex_w, my_tex_h), ImVec2(0, 0), ImVec2(1, 1), ImColor(255, 255, 255, 255), ImColor(255, 255, 255, 128));
         }
 
         // 2. Show another simple window. In most cases you will use an explicit Begin/End pair to name your windows.
@@ -210,7 +226,7 @@ int main()
         if (show_demo_window)
         {
             ImGui::SetNextWindowPos(ImVec2(650, 20), ImGuiCond_FirstUseEver); // Normally user code doesn't need/want to call this because positions are saved in .ini file anyway. Here we just want to make the demo initial state a bit more friendly!
-            ImGui::ShowDemoWindow(&show_demo_window);
+           // ImGui::ShowDemoWindow(&show_demo_window);
         }
 
         // Rendering

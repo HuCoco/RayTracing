@@ -103,3 +103,80 @@ bool MutexWindows::TryLock()
 {
     return WaitForSingleObject(m_Handle, 0) != WAIT_TIMEOUT;
 }
+
+SemaphoreWindows::SemaphoreWindows()
+    : m_Handle(nullptr)
+{
+
+}
+
+SemaphoreWindows::~SemaphoreWindows()
+{
+    if (m_Handle)
+    {
+        Finalize();
+    }
+}
+
+void SemaphoreWindows::Initialize(uint32_t initialCount, uint32_t maximumCount)
+{
+    m_Handle = ::CreateSemaphore(NULL, initialCount, maximumCount, NULL);
+    assert(m_Handle && "Failed to create semaphore.");
+}
+
+void SemaphoreWindows::Finalize()
+{
+    auto result = CloseHandle(m_Handle);
+    m_Handle = nullptr;
+}
+
+void SemaphoreWindows::Acquire()
+{
+    auto result = WaitForSingleObject(m_Handle, INFINITE);
+}
+
+void SemaphoreWindows::Release()
+{
+    auto result = ReleaseSemaphore(m_Handle, 1, NULL);
+}
+
+void SemaphoreWindows::Release(uint32_t releaseCount)
+{
+    auto result = ReleaseSemaphore(m_Handle, releaseCount, NULL);
+}
+
+CriticalSectionWindows::CriticalSectionWindows()
+    : m_IsIntial(false)
+{
+
+}
+
+CriticalSectionWindows::~CriticalSectionWindows()
+{
+    if (m_IsIntial)
+    {
+        Finalize();
+    }
+}
+
+void CriticalSectionWindows::Initialize()
+{
+    ::InitializeCriticalSection(&m_Handle);
+    m_IsIntial = true;
+}
+
+void CriticalSectionWindows::Finalize()
+{
+    ::DeleteCriticalSection(&m_Handle);
+    m_IsIntial = false;
+}
+
+void CriticalSectionWindows::EnterSection()
+{
+    ::EnterCriticalSection(&m_Handle);
+}
+
+void CriticalSectionWindows::LeaveSection()
+{
+    ::LeaveCriticalSection(&m_Handle);
+}

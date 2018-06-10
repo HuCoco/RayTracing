@@ -29,6 +29,7 @@ enum ThreadAffinity
 };
 
 static const size_t GE_DEFUALT_THRED_STACK_SIZE = 0x4000; // 4K
+
 typedef uint32_t(*ThreadEntryFunc)(void*);
 
 struct ThreadInitializeDescription
@@ -73,4 +74,32 @@ public:
 
 private:
     HANDLE m_Handle;
+};
+
+class SemaphoreWindows
+{
+public:
+    SemaphoreWindows();
+    ~SemaphoreWindows();
+    void Initialize(uint32_t initialCount, uint32_t maximumCount);
+    void Finalize();
+    void Acquire();
+    void Release();
+    void Release(uint32_t releaseCount);
+private:
+    HANDLE m_Handle;
+};
+
+class CriticalSectionWindows
+{
+public:
+    CriticalSectionWindows();
+    virtual ~CriticalSectionWindows();
+    virtual void Initialize();
+    virtual void Finalize();
+    virtual void EnterSection();
+    virtual void LeaveSection();
+private:
+    CRITICAL_SECTION m_Handle;
+    bool m_IsIntial;
 };

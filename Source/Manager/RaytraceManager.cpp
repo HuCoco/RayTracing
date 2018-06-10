@@ -30,26 +30,13 @@ RaytraceManager& RaytraceManager::GetInstance()
 
 void RaytraceManager::Initialize()
 {
-    mQuit = false;
-    mQueueMutex.Initialize(false);
-
-    ThreadInitializeDescription desc;
-    desc.EntryFunc = SyncRenderPixel;
-    desc.Parameter = this;
-    desc.Affinity = GE_THREAD_CORE_4 | GE_THREAD_CORE_3 | GE_THREAD_CORE_2 | GE_THREAD_CORE_1;
-    desc.Priority = GE_THREAD_PRIORITY_NORMAL;
-    desc.StackSize = GE_DEFUALT_THRED_STACK_SIZE;
-    desc.StackAddress = nullptr;
-    mThread.Initialize(desc);
-
+    mRayTracingTaskManager.Initialize(8);
 
 }
 
 void RaytraceManager::Finalize()
 {
-    mQuit = true;
-    mThread.Join();
-    mThread.Finalize();
+    mRayTracingTaskManager.Finalize();
 }
 
 void RaytraceManager::RenderScene(const Scene& scene, const TraceDescription& desc, Image* image)
@@ -88,15 +75,13 @@ void RaytraceManager::RenderSceneAsyn(Scene& scene, const TraceDescription& desc
 
         for (int x = 0; x < width; x++)
         {
-            RenderPixelData data;
+            RayTracingTaskData data;
             data.x = x+0.5f;
             data.y = y+0.5f;
             data.output = image->getPixel(x, y);
             data.scene = &scene;
             data.callback = nullptr;
-            mQueueMutex.Lock();
-            mQueue.push(data);
-            mQueueMutex.Unlock();
+            mRayTracingTaskManager.PushTask(data);
             //double pixelPosX = x + 0.5;
             //Ray ray = scene.camera.getRay(pixelPosX, pixelPosY);
             //Color pixelColor = Raytrace::TraceRay(ray, scene, desc.num_reflection, desc.HasShadow);
@@ -105,39 +90,5 @@ void RaytraceManager::RenderSceneAsyn(Scene& scene, const TraceDescription& desc
         }
         // printf( "%d ", y );
     }
-}
-
-bool RaytraceManager::GetRenderPixelData(RenderPixelData& data)
-{
-    mQueueMutex.Lock();
-    if (mQueue.empty())
-    {
-        mQueueMutex.Unlock();
-        return false;
-    }
-    data = mQueue.front();
-    mQueue.pop();
-    mQueueMutex.Unlock();
-    return true;
-}
-
-void RaytraceManager::SyncRenderPixel(void* param)
-{
-    RaytraceManager* manager = (RaytraceManager*)param;
-    while (!manager->IsQuit())
-    {
-        RenderPixelData render_data;
-        bool res = manager->GetRenderPixelData(render_data);
-        if (res == false)
-        {
-            ::Sleep(1000);
-            continue;
-        }
-        Ray ray = render_data.scene->camera.getRay(render_data.x, render_data.y);
-        Color pixelColor = Raytrace::TraceRay(ray, *render_data.scene, 2, true);
-        pixelColor.clamp();
-        *render_data.output = pixelColor;
-    }
-
 }
 

@@ -32,13 +32,22 @@ void AsynRenderer::Initialize()
 
 void AsynRenderer::Finalize()
 {
-    ClearTasks();
-    delete[] mThreads;
+    if (mTaskList)
+    {
+        ClearTasks();
+        delete[] mThreads;
+        mThreads = nullptr;
+    }
+
 }
 
 
 void AsynRenderer::RenderScene(Scene* scene, Image* output, uint32_t numProcesser)
 {
+    if (mActivateThreads != 0)
+    {
+        return;
+    }
     //Math::clamp(numProcesser, 1u, mMaxProcesser);
     uint32_t width = scene->camera.getImageWidth();
     uint32_t height = scene->camera.getImageHeight();
@@ -71,7 +80,7 @@ void AsynRenderer::RenderScene(Scene* scene, Image* output, uint32_t numProcesse
 
 bool AsynRenderer::IsFinishAllTask()
 {
-    return (sNumFinishTasks == mActivateThreads) || (mActivateThreads == 0);
+    return (sNumFinishTasks == mActivateThreads) && (mActivateThreads != 0);
 }
 
 void AsynRenderer::ClearTasks()
@@ -90,15 +99,27 @@ void AsynRenderer::DoTask(void* param)
     AsynSceneRenderTask* task = (AsynSceneRenderTask*)param;
     for (uint32_t y = task->beginHeight; y < task->endHeight; y++)
     {
-        double pixelPosY = y + 0.5;
+        
 
         for (uint32_t x = 0; x < task->width; x++)
         {
-            double pixelPosX = x + 0.5;
-            Ray ray = task->scene->camera.getRay(pixelPosX, pixelPosY);
-            Color pixelColor = Raytrace::TraceRay(ray, *task->scene, 2, true);
+            Color pixelColor = Color(0, 0, 0);
+            for (float i = 0.0f; i <= 1.0f; i += 0.5f)
+            {
+                for (float j = 0.0f; j <= 1.0f; j += 0.5f)
+                {
+                    double pixelPosX = x + i;
+                    double pixelPosY = y + j;
+                    Ray ray = task->scene->camera.getRay(pixelPosX, pixelPosY);
+                    pixelColor += Raytrace::TraceRay(ray, *task->scene, 2, true);
+
+                    
+                }
+            }
+            pixelColor /= 100.0f;
             pixelColor.clamp();
             task->output->setPixel(x, y, pixelColor);
+
         }
         // printf( "%d ", y );
     }

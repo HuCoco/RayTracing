@@ -183,11 +183,11 @@ int main()
         ImGui_ImplGlfwGL3_NewFrame();
         gImage.UpdateTexture();
         {
+            static uint32_t aaa = 0;
             ImGui::Begin("Option");
             if (ImGui::Button("Start"))
             {
-                //RaytraceManager::GetInstance().RenderSceneAsyn(scene1, desc, &gImage);
-                AsynRenderer::GetInstance()->RenderScene(&scene2, &gImage, 16);
+                   AsynRenderer::GetInstance()->RenderScene(&scene1, &gImage, 16);
             }
             ImGui::End();
         }
@@ -210,6 +210,11 @@ int main()
         ImGui::Render();
         ImGui_ImplGlfwGL3_RenderDrawData(ImGui::GetDrawData());
         glfwSwapBuffers(window);
+        if (AsynRenderer::GetInstance()->IsFinishAllTask())
+        {
+            AsynRenderer::GetInstance()->ClearTasks();
+        }
+
     }
 
     AsynRenderer::GetInstance()->Finalize();

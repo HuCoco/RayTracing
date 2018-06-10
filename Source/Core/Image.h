@@ -1,9 +1,7 @@
 #ifndef _IMAGE_H_
 #define _IMAGE_H_
 
-#include <cstdlib>
-#include <cmath>
-#include <cassert>
+#include <Platform/Platform.h>
 #include "Color.h"
 
 using namespace std;
@@ -43,7 +41,7 @@ public:
 	Image &setPixel( int x, int y, Color c ) 
 	{ 
 		assert( x >= 0 && x < mWidth && y >= 0 && y < mHeight ); 
-		mData[ y * mWidth + x ] = c; 
+		mData[ (mHeight - y - 1) * mWidth + x ] = c;
 		return (*this); 
 	}
 
@@ -51,9 +49,14 @@ public:
 	Color getPixel( int x, int y ) const
 	{ 
 		assert( x >= 0 && x < mWidth && y >= 0 && y < mHeight ); 
-		return mData[ y * mWidth + x ]; 
+		return mData[(mHeight - y - 1) * mWidth + x];
 	}
 
+    Color* getPixel(int x, int y)
+    {
+        assert(x >= 0 && x < mWidth && y >= 0 && y < mHeight);
+        return &mData[(mHeight - y - 1) * mWidth + x];
+    }
 
 	int width() const { return mWidth; }
 
@@ -65,13 +68,14 @@ public:
 
 	// Write image to a file. Returns true iff successful. 
 	bool writeToFile( const char *filename ) const;
-    void CreateTextureData(void* data);
-
+    void UpdateTexture();
+    inline void* GetData() { return mData; }
+    inline GLuint GetGLTextureHandle() { return mGLHandle; }
 private:
 
 	int mWidth, mHeight;
 	Color *mData;
-
+    GLuint mGLHandle;
 	// Disallow the use of copy constructor and assignment operator.
 	Image( const Image &image ) {}
     Image &operator= ( const Image &image ) {return const_cast<Image&>(image);}

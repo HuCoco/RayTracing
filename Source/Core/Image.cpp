@@ -11,8 +11,11 @@ using namespace std;
 Image &Image::setImage( int width, int height )
 {
     assert( width > 0 && height > 0 );
-	mWidth = width; mHeight = height;
-	delete[] mData;
+    glGenTextures(1, &mGLHandle);
+	mWidth = width; 
+    mHeight = height;
+    if(mData != nullptr)
+	    delete[] mData;
     mData = new Color[ width * height ];
 	return (*this);
 }
@@ -70,22 +73,11 @@ bool Image::writeToFile( const char *filename ) const
 	return ( status == 1 );
 }
 
-void Image::CreateTextureData(void* data)
+
+void Image::UpdateTexture()
 {
-    uchar* pData = (uchar*)data;
-    for (int i = 0; i < mWidth * mHeight; i++)
-    {
-        int r = (int)(256.0 * mData[i].r());
-        if (r > 255) r = 255;
-        int g = (int)(256.0 * mData[i].g());
-        if (g > 255) g = 255;
-        int b = (int)(256.0 * mData[i].b());
-        if (b > 255) b = 255;
-
-
-        pData[4 * i + 0] = (uchar)r;
-        pData[4 * i + 1] = (uchar)g;
-        pData[4 * i + 2] = (uchar)b;
-        pData[4 * i + 3] = (uchar)255;
-    }
+    glBindTexture(GL_TEXTURE_2D, mGLHandle);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, mWidth, mHeight, 0, GL_RGB, GL_FLOAT, mData);
+    glGenerateMipmap(GL_TEXTURE_2D);
+    glBindTexture(GL_TEXTURE_2D, 0);
 }

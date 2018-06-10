@@ -34,12 +34,14 @@
 #include <GL/gl3w.h>    // This example is using gl3w to access OpenGL functions (because it is small). You may use glew/glad/glLoadGen/etc. whatever already works for you.
 #include <GLFW/glfw3.h>
 
+#include <Manager/RaytraceManager.h>
+
 using namespace std;
 
 
 // Constants for Scene 1.
-static const int imageWidth1 = 512;
-static const int imageHeight1 = 512;
+static const int imageWidth1 = 640;
+static const int imageHeight1 = 480;
 static const int reflectLevels1 = 2;  // 0 -- object does not reflect scene.
 static const int hasShadow1 = true;
 
@@ -61,7 +63,7 @@ void RenderImage( const char *imageFilename, const Scene &scene, int reflectLeve
 	int imgHeight = scene.camera.getImageHeight();
 
 	//Image image( imgWidth, imgHeight );	// To store the result of ray tracing.
-    gImage.setImage(imgWidth, imgWidth);
+    gImage.setImage(imgWidth, imgHeight);
 	double startTime = Util::GetCurrRealTime();
 	double startCPUTime = Util::GetCurrCPUTime();
 
@@ -114,36 +116,37 @@ static void glfw_error_callback(int error, const char* description)
 
 int main()
 {
+    RaytraceManager::GetInstance().Initialize();
 //	atexit( WaitForEnterKeyBeforeExit );
 //
 //
 //
 // Define Scene 1.
 
-	Scene scene1;
-	DefineScene1( scene1, imageWidth1, imageHeight1 );
+	//Scene scene1;
+	//DefineScene1( scene1, imageWidth1, imageHeight1 );
 
 // Render Scene 1.
 
-	printf( "Render Scene 1...\n" );
-	RenderImage( "C:/Users/Huke/Desktop/ImageTest/out1.tga", scene1, reflectLevels1, hasShadow1 );
+	//printf( "Render Scene 1...\n" );
+	//RenderImage( "C:/Users/Huke/Desktop/ImageTest/out1.tga", scene1, reflectLevels1, hasShadow1 );
+	//printf( "Image completed.\n" );
+//
+//
+//
+// Define Scene 2.
+
+	Scene scene2;
+	DefineScene2( scene2, imageWidth2, imageHeight2 );
+
+// Render Scene 2.
+
+	printf( "Render Scene 2...\n" );
+	
 	printf( "Image completed.\n" );
-//
-//
-//
-//// Define Scene 2.
-//
-//	Scene scene2;
-//	DefineScene2( scene2, imageWidth2, imageHeight2 );
-//
-//// Render Scene 2.
-//
-//	printf( "Render Scene 2...\n" );
-//	RenderImage( "C:/Users/Huke/Desktop/ImageTest/out2.tga", scene2, reflectLevels2, hasShadow2 );
-//	printf( "Image completed.\n" );
-//
-//
-//	printf( "All done.\n" );
+
+
+	printf( "All done.\n" );
 
 
     glfwSetErrorCallback(glfw_error_callback);
@@ -168,72 +171,41 @@ int main()
 
     io.Fonts->AddFontFromFileTTF("Resource/Fonts/Roboto-Medium.ttf", 16.0f);
 
-    bool show_demo_window = true;
-    bool show_another_window = false;
-    ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
-
-    uchar* tex_data = new uchar[imageWidth1 * imageHeight1 * 4];
-    gImage.CreateTextureData(tex_data);
-    GLuint texture;
-    glGenTextures(1, &texture);
-    glBindTexture(GL_TEXTURE_2D, texture);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, imageWidth1, imageHeight1, 0, GL_RGBA, GL_UNSIGNED_BYTE, tex_data);
-    glGenerateMipmap(GL_TEXTURE_2D);
-    glBindTexture(GL_TEXTURE_2D, 0);
-
+    gImage.setImage(scene2.camera.getImageWidth(), scene2.camera.getImageHeight());
+    TraceDescription desc;
+    desc.HasShadow = true;
+    desc.num_ray_per_pixel = 1;
+    desc.num_reflection = 2;
+    
+    //RenderImage("C:/Users/Huke/Desktop/ImageTest/out2.tga", scene2, reflectLevels2, hasShadow2);
     while (!glfwWindowShouldClose(window))
-    {
+    {   
         glfwPollEvents();
         ImGui_ImplGlfwGL3_NewFrame();
-
+        gImage.UpdateTexture();
         {
-            static float f = 0.0f;
-            static int counter = 0;
-            ImGui::Text("Hello, world!");                           // Display some text (you can use a format string too)
-            ImGui::SliderFloat("float", &f, 0.0f, 1.0f);            // Edit 1 float using a slider from 0.0f to 1.0f    
-            ImGui::ColorEdit3("clear color", (float*)&clear_color); // Edit 3 floats representing a color
-
-            ImGui::Checkbox("Demo Window", &show_demo_window);      // Edit bools storing our windows open/close state
-            ImGui::Checkbox("Another Window", &show_another_window);
-
-            if (ImGui::Button("Button"))                            // Buttons return true when clicked (NB: most widgets return true when edited/activated)
-                counter++;
-            ImGui::SameLine();
-            ImGui::Text("counter = %d", counter);
-
-            ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
-
-            
-            ImTextureID my_tex_id = (ImTextureID)texture;//io.Fonts->TexID;
-            float my_tex_w = imageWidth1;//(float)io.Fonts->TexWidth;
-            float my_tex_h = imageHeight1;//(float)io.Fonts->TexHeight;
-
-            ImGui::Text("%.0fx%.0f", my_tex_w, my_tex_h);
-            ImGui::Image(my_tex_id, ImVec2(my_tex_w, my_tex_h), ImVec2(0, 0), ImVec2(1, 1), ImColor(255, 255, 255, 255), ImColor(255, 255, 255, 128));
-        }
-
-        // 2. Show another simple window. In most cases you will use an explicit Begin/End pair to name your windows.
-        if (show_another_window)
-        {
-            ImGui::Begin("Another Window", &show_another_window);
-            ImGui::Text("Hello from another window!");
-            if (ImGui::Button("Close Me"))
-                show_another_window = false;
+            ImGui::Begin("Option");
+            if (ImGui::Button("Start"))
+            {
+                RaytraceManager::GetInstance().RenderSceneAsyn(scene2, desc, &gImage);
+            }
             ImGui::End();
         }
 
-        // 3. Show the ImGui demo window. Most of the sample code is in ImGui::ShowDemoWindow(). Read its code to learn more about Dear ImGui!
-        if (show_demo_window)
         {
-            ImGui::SetNextWindowPos(ImVec2(650, 20), ImGuiCond_FirstUseEver); // Normally user code doesn't need/want to call this because positions are saved in .ini file anyway. Here we just want to make the demo initial state a bit more friendly!
-           // ImGui::ShowDemoWindow(&show_demo_window);
+            ImGui::Begin("Option");
+            ImTextureID my_tex_id = (ImTextureID)gImage.GetGLTextureHandle();//io.Fonts->TexID;
+            float my_tex_w = imageWidth1;//(float)io.Fonts->TexWidth;
+            float my_tex_h = imageHeight1;//(float)io.Fonts->TexHeight;
+            ImGui::Image(my_tex_id, ImVec2(my_tex_w, my_tex_h), ImVec2(0, 0), ImVec2(1, 1), ImColor(255, 255, 255, 255), ImColor(255, 255, 255, 128));
+            ImGui::End();
         }
 
         // Rendering
         int display_w, display_h;
         glfwGetFramebufferSize(window, &display_w, &display_h);
         glViewport(0, 0, display_w, display_h);
-        glClearColor(clear_color.x, clear_color.y, clear_color.z, clear_color.w);
+        glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
         ImGui::Render();
         ImGui_ImplGlfwGL3_RenderDrawData(ImGui::GetDrawData());

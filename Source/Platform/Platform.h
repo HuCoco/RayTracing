@@ -49,6 +49,7 @@
 #include <Windows.h>
 #endif
 
+#include <GL/gl3w.h>
 
 #ifdef min
 #undef min

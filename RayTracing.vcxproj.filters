@@ -34,14 +34,14 @@
     <Filter Include="Core\Util">
       <UniqueIdentifier>{bf739052-501f-4573-8c25-9446f1f101c3}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Manager">
-      <UniqueIdentifier>{d0d83e48-d3c8-48da-8951-555b13efc979}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Platform\Defines">
       <UniqueIdentifier>{ef217c88-3d6e-4262-a27c-66e4b09c8a7a}</UniqueIdentifier>
     </Filter>
     <Filter Include="Platform\Thread">
       <UniqueIdentifier>{00401ff4-7535-4393-81ba-f485f31db85e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Renderer">
+      <UniqueIdentifier>{d0d83e48-d3c8-48da-8951-555b13efc979}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -165,17 +165,14 @@
     <ClInclude Include="Source\Platform\PlatformDefines.h">
       <Filter>Platform\Defines</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Manager\RaytraceManager.h">
-      <Filter>Manager</Filter>
-    </ClInclude>
     <ClInclude Include="Source\Core\Texture.h">
       <Filter>Core\Image</Filter>
     </ClInclude>
     <ClInclude Include="Source\Platform\Thread\Thread.h">
       <Filter>Platform\Thread</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Manager\RayTracingTaskManager.h">
-      <Filter>Manager</Filter>
+    <ClInclude Include="Source\Renderer\AsynRenderer.h">
+      <Filter>Renderer</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -219,17 +216,14 @@
     <ClCompile Include="Source\Core\Util.cpp">
       <Filter>Core\Util</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Manager\RaytraceManager.cpp">
-      <Filter>Manager</Filter>
-    </ClCompile>
     <ClCompile Include="Source\Core\Texture.cpp">
       <Filter>Core\Image</Filter>
     </ClCompile>
     <ClCompile Include="Source\Platform\Thread\Thread.cpp">
       <Filter>Platform\Thread</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Manager\RayTracingTaskManager.cpp">
-      <Filter>Manager</Filter>
+    <ClCompile Include="Source\Renderer\AsynRenderer.cpp">
+      <Filter>Renderer</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

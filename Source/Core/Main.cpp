@@ -34,7 +34,7 @@
 #include <GL/gl3w.h>    // This example is using gl3w to access OpenGL functions (because it is small). You may use glew/glad/glLoadGen/etc. whatever already works for you.
 #include <GLFW/glfw3.h>
 
-#include <Manager/RaytraceManager.h>
+#include <Renderer/AsynRenderer.h>
 
 using namespace std;
 
@@ -116,7 +116,9 @@ static void glfw_error_callback(int error, const char* description)
 
 int main()
 {
-    RaytraceManager::GetInstance().Initialize();
+    AsynRenderer::GetInstance()->Initialize();
+
+
 //	atexit( WaitForEnterKeyBeforeExit );
 //
 //
@@ -172,10 +174,7 @@ int main()
     io.Fonts->AddFontFromFileTTF("Resource/Fonts/Roboto-Medium.ttf", 16.0f);
 
     gImage.setImage(scene2.camera.getImageWidth(), scene2.camera.getImageHeight());
-    TraceDescription desc;
-    desc.HasShadow = true;
-    desc.num_ray_per_pixel = 1;
-    desc.num_reflection = 2;
+
     
     //RenderImage("C:/Users/Huke/Desktop/ImageTest/out2.tga", scene2, reflectLevels2, hasShadow2);
     while (!glfwWindowShouldClose(window))
@@ -187,14 +186,15 @@ int main()
             ImGui::Begin("Option");
             if (ImGui::Button("Start"))
             {
-                RaytraceManager::GetInstance().RenderSceneAsyn(scene1, desc, &gImage);
+                //RaytraceManager::GetInstance().RenderSceneAsyn(scene1, desc, &gImage);
+                AsynRenderer::GetInstance()->RenderScene(&scene2, &gImage, 16);
             }
             ImGui::End();
         }
 
         {
             ImGui::Begin("Option");
-            ImTextureID my_tex_id = (ImTextureID)gImage.GetGLTextureHandle();//io.Fonts->TexID;
+            ImTextureID my_tex_id = reinterpret_cast<ImTextureID>(gImage.GetGLTextureHandle());//io.Fonts->TexID;
             float my_tex_w = imageWidth1;//(float)io.Fonts->TexWidth;
             float my_tex_h = imageHeight1;//(float)io.Fonts->TexHeight;
             ImGui::Image(my_tex_id, ImVec2(my_tex_w, my_tex_h), ImVec2(0, 0), ImVec2(1, 1), ImColor(255, 255, 255, 255), ImColor(255, 255, 255, 128));
@@ -212,7 +212,7 @@ int main()
         glfwSwapBuffers(window);
     }
 
-    RaytraceManager::GetInstance().Finalize();
+    AsynRenderer::GetInstance()->Finalize();
     // Cleanup
     ImGui_ImplGlfwGL3_Shutdown();
     ImGui::DestroyContext();

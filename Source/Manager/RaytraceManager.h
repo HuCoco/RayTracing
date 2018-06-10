@@ -30,14 +30,16 @@ public:
     static RaytraceManager& GetInstance();
 
     void Initialize();
+    void Finalize();
     void RenderScene(const Scene& scene, const TraceDescription& desc, Image* texture);
     void RenderSceneAsyn(Scene& scene, const TraceDescription& desc, Image* texture);
     bool GetRenderPixelData(RenderPixelData& data);
     static void SyncRenderPixel(void* data);
+    inline bool IsQuit() { return mQuit; }
 private:
     ThreadWindows mThread;
     MutexWindows mQueueMutex;
     std::atomic<uint32_t> mPixelCounter{ 0 };
     std::queue<RenderPixelData> mQueue;
-    
+    bool mQuit;
 };

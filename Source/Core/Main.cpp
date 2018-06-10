@@ -123,8 +123,8 @@ int main()
 //
 // Define Scene 1.
 
-	//Scene scene1;
-	//DefineScene1( scene1, imageWidth1, imageHeight1 );
+	Scene scene1;
+	DefineScene1( scene1, imageWidth1, imageHeight1 );
 
 // Render Scene 1.
 
@@ -187,7 +187,7 @@ int main()
             ImGui::Begin("Option");
             if (ImGui::Button("Start"))
             {
-                RaytraceManager::GetInstance().RenderSceneAsyn(scene2, desc, &gImage);
+                RaytraceManager::GetInstance().RenderSceneAsyn(scene1, desc, &gImage);
             }
             ImGui::End();
         }
@@ -212,6 +212,7 @@ int main()
         glfwSwapBuffers(window);
     }
 
+    RaytraceManager::GetInstance().Finalize();
     // Cleanup
     ImGui_ImplGlfwGL3_Shutdown();
     ImGui::DestroyContext();

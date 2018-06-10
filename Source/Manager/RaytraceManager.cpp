@@ -30,7 +30,7 @@ RaytraceManager& RaytraceManager::GetInstance()
 
 void RaytraceManager::Initialize()
 {
-
+    mQuit = false;
     mQueueMutex.Initialize(false);
 
     ThreadInitializeDescription desc;
@@ -43,6 +43,13 @@ void RaytraceManager::Initialize()
     mThread.Initialize(desc);
 
 
+}
+
+void RaytraceManager::Finalize()
+{
+    mQuit = true;
+    mThread.Join();
+    mThread.Finalize();
 }
 
 void RaytraceManager::RenderScene(const Scene& scene, const TraceDescription& desc, Image* image)
@@ -117,7 +124,7 @@ bool RaytraceManager::GetRenderPixelData(RenderPixelData& data)
 void RaytraceManager::SyncRenderPixel(void* param)
 {
     RaytraceManager* manager = (RaytraceManager*)param;
-    while (true)
+    while (!manager->IsQuit())
     {
         RenderPixelData render_data;
         bool res = manager->GetRenderPixelData(render_data);

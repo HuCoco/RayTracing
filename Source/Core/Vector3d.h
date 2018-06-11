@@ -17,6 +17,7 @@ public:
 // Constructors
 
     Vector3d() {}
+    Vector3d( double v ) { data[0] = v; data[1] = v; data[2] = v; }
     Vector3d( const double v[3] ) { data[0] = v[0]; data[1] = v[1]; data[2] = v[2]; }
     Vector3d( const float  v[3] ) { data[0] = v[0]; data[1] = v[1]; data[2] = v[2]; }
 	Vector3d( double x, double y, double z ) { data[0] = x; data[1] = y; data[2] = z; }

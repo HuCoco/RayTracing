@@ -133,6 +133,7 @@
   <ItemGroup>
     <ClInclude Include="Extension\gl3w\GL\gl3w.h" />
     <ClInclude Include="Extension\gl3w\GL\glcorearb.h" />
+    <ClInclude Include="Source\Core\BRDF_Function.h" />
     <ClInclude Include="Source\Core\Camera.h" />
     <ClInclude Include="Source\Core\Color.h" />
     <ClInclude Include="Source\Core\Image.h" />

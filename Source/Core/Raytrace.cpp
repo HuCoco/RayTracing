@@ -22,7 +22,7 @@
 #include "Light.h"
 #include "Scene.h"
 #include "Raytrace.h"
-
+#include "BRDF_Function.h"
 using namespace std;
 
 
@@ -62,13 +62,36 @@ static Color computePhongLighting( const Vector3d &L, const Vector3d &N, const V
 
 	Vector3d R = mirrorReflect( L, NN );
 	float NL = (float) dot( NN, L );
-	float RVn = pow( (float) dot( R, V ), (float) mat.n );
+	float RVn = pow( (float) dot( V, R ), (float) mat.n );
 
 	return ptLight.I_source * ( mat.k_d * NL  +  mat.k_r * RVn );
 }
 
+static Color computeBlinnPhongLighting(const Vector3d &L, const Vector3d &N, const Vector3d &V,
+    const Material &mat, const PointLightSource &ptLight)
+{
+    Vector3d NN = (dot(L, N) >= 0.0) ? N : -N;
+
+    Vector3d R = mirrorReflect(L, NN);
+    Vector3d H = L + V;
+    H = H.makeUnitVector();
+    float NL = (float)dot(NN, L);
+    float RVn = pow((float)dot(N, H), (float)mat.n);
+
+    return ptLight.I_source * (mat.k_d * NL + mat.k_r * RVn);
+}
 
 
+static Color computeBRDF(Color SpecularColor, float Roughness, Vector3d L, Vector3d V, Vector3d N)
+{
+    Color res;
+    Vector3d spec;
+    spec.setXYZ(SpecularColor.r(), SpecularColor.g(), SpecularColor.b());
+    Vector3d a = MicrofacetSpecular(spec, Roughness, L, V, N);
+    res.setRGB(a.x(), a.y(), a.z());
+    res.clamp();
+    return res;
+}
 
 
 //////////////////////////////////////////////////////////////////////////////
@@ -150,9 +173,10 @@ Color Raytrace::TraceRay( const Ray &ray, const Scene &scene,
             }
         }
         result += computePhongLighting(L, N, V, *nearestHitRec.mat_ptr, scene.ptLight[i]);
+        //result += computeBlinnPhongLighting(L, N, V, *nearestHitRec.mat_ptr, scene.ptLight[i]);
+        //result += computeBRDF(nearestHitRec.mat_ptr->k_a, 2.0F, L, V, N);// *scene.ptLight[i].I_source;
     }
     //***********************************************
-    
 
 
 

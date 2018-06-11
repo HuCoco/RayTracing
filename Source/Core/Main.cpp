@@ -187,7 +187,11 @@ int main()
             ImGui::Begin("Option");
             if (ImGui::Button("Start"))
             {
-                   AsynRenderer::GetInstance()->RenderScene(&scene1, &gImage, 16);
+                   AsynRenderer::GetInstance()->RenderScene(&scene1, &gImage, 8);
+            }
+            if (ImGui::Button("Start2"))
+            {
+                AsynRenderer::GetInstance()->RenderScene(&scene2, &gImage, 8);
             }
             ImGui::End();
         }
@@ -252,32 +256,32 @@ void DefineScene1( Scene &scene, int imageWidth, int imageHeight )
 	scene.material[0].k_a = scene.material[0].k_d;
 	scene.material[0].k_r = Color( 0.8f, 0.8f, 0.8f ) / 1.5f;
 	scene.material[0].k_rg = Color( 0.8f, 0.8f, 0.8f ) / 3.0f;
-	scene.material[0].n = 64.0f;
+	scene.material[0].n = 32.0f;
 
 	// Light green.
 	scene.material[1].k_d = Color( 0.4f, 0.8f, 0.4f );
-	scene.material[1].k_a = scene.material[0].k_d;
+	scene.material[1].k_a = scene.material[1].k_d;
 	scene.material[1].k_r = Color( 0.8f, 0.8f, 0.8f ) / 1.5f;
 	scene.material[1].k_rg = Color( 0.8f, 0.8f, 0.8f ) / 3.0f;
 	scene.material[1].n = 64.0f;
 
 	// Light blue.
 	scene.material[2].k_d = Color( 0.4f, 0.4f, 0.8f ) * 0.9f;
-	scene.material[2].k_a = scene.material[0].k_d;
+	scene.material[2].k_a = scene.material[2].k_d;
 	scene.material[2].k_r = Color( 0.8f, 0.8f, 0.8f ) / 1.5f;
 	scene.material[2].k_rg = Color( 0.8f, 0.8f, 0.8f ) / 2.5f;
 	scene.material[2].n = 64.0f;
 
 	// Yellow.
 	scene.material[3].k_d = Color( 0.6f, 0.6f, 0.2f );
-	scene.material[3].k_a = scene.material[0].k_d;
+	scene.material[3].k_a = scene.material[3].k_d;
 	scene.material[3].k_r = Color( 0.8f, 0.8f, 0.8f ) / 1.5f;
 	scene.material[3].k_rg = Color( 0.8f, 0.8f, 0.8f ) / 3.0f;
 	scene.material[3].n = 64.0f;
 
 	// Gray.
 	scene.material[4].k_d = Color( 0.6f, 0.6f, 0.6f );
-	scene.material[4].k_a = scene.material[0].k_d;
+	scene.material[4].k_a = scene.material[4].k_d;
 	scene.material[4].k_r = Color( 0.6f, 0.6f, 0.6f );
 	scene.material[4].k_rg = Color( 0.8f, 0.8f, 0.8f ) / 3.0f;
 	scene.material[4].n = 128.0f;

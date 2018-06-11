@@ -126,6 +126,12 @@ namespace Math
         *pCos = cos(angle);
     }
 
+    template<typename _T>
+    static inline _T rcp(_T op)
+    {
+        return ((_T)(1) / op);
+    }
+
     using std::exp;
     using std::exp;
     using std::log;

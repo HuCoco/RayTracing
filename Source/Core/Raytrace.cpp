@@ -94,7 +94,7 @@ static Color computeBRDF(Vector3d L, Vector3d V, Vector3d N, float Roughness, co
     float Fg = GeometryFunction(N, V, L, Roughness);
     Vector3d surfaceColor(mat.k_d.r(), mat.k_d.g(), mat.k_d.b());
     Color Ff = FresnelEquation(N, V, Vector3d(0.04f) * surfaceColor);
-    Color cook_torrance = (Fn*Fg*Ff) / (4 * NoV * NoL);
+    Color cook_torrance = mat.k_r * (Fn*Fg*Ff) / (4 * NoV * NoL);
     Color spec = cook_torrance * ptLight.I_source * dot(L, N);
 
     return diffuse + spec;
@@ -155,6 +155,7 @@ Color Raytrace::TraceRay( const Ray &ray, const Scene &scene,
     //*********** WRITE YOUR CODE HERE **************
     
     float shadow = 1.0f;
+    int ii = 0;
     for(int i = 0 ; i < scene.numPtLights ; i++)
     {
         
@@ -179,13 +180,14 @@ Color Raytrace::TraceRay( const Ray &ray, const Scene &scene,
                 continue;
             }
         }
-        result += computePhongLighting(L, N, V, *nearestHitRec.mat_ptr, scene.ptLight[i]);
+        //result += computePhongLighting(L, N, V, *nearestHitRec.mat_ptr, scene.ptLight[i])* (1.0 / scene.numPtLights);
         //result += computeBlinnPhongLighting(L, N, V, *nearestHitRec.mat_ptr, scene.ptLight[i]);
-        //result += computeBRDF(L, V, N, 0.5f, *nearestHitRec.mat_ptr, scene.ptLight[i]);// *scene.ptLight[i].I_source;
+        result += computeBRDF(L, V, N, 0.5f, *nearestHitRec.mat_ptr, scene.ptLight[i]) * (1.0 / scene.numPtLights);// *scene.ptLight[i].I_source;
+        
     }
     //***********************************************
 
-
+    
 
 
 

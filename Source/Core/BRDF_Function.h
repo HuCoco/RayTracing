@@ -185,3 +185,70 @@ static Vector3d MicrofacetSpecular(Vector3d SpecularColor, float Roughness, Vect
 
     return D * Vis * F;
 }
+
+
+static float NormalDistributionFunction(float NoH, float Roughness)
+{
+    float a2 = Roughness * Roughness;
+    float NdotH = Math::max(NoH, 0.0f);
+    float NdotH2 = NdotH * NdotH;
+
+    float nom = a2;
+    float denom = (NdotH2 * (a2 - 1.0) + 1.0);
+    denom = PI * denom * denom;
+
+    return nom / denom;
+}
+
+static Vector3d Lerp(Vector3d from, Vector3d to, float k)
+{
+    if (k <= 0.0f)
+    {
+        return from;
+    }
+    else if (k >= 1.0f)
+    {
+        return to;
+    }
+    return k * to + (1.0f - k) *  from;
+}
+
+static float Lerp(float from, float to, float k)
+{
+    if (k <= 0.0f)
+    {
+        return from;
+    }
+    else if (k >= 1.0f)
+    {
+        return to;
+    }
+    return k * to + (1.0f - k) *  from;
+}
+
+static float GeometrychlickGGX(float NoV, float k)
+{
+    float nom = NoV;
+    float denom = NoV * (1.0 - k) + k;
+
+    return nom / denom;
+}
+
+static float GeometryFunction(Vector3d N, Vector3d V, Vector3d L, float Roughness)
+{
+    float k = Math::pow(Roughness + 1, 2) / 8.0f;
+    float NoV = Math::max(dot(N, V), 0.0);
+    float NoL = Math::max(dot(N, L), 0.0);
+    float ggx1 = GeometrychlickGGX(NoV, k);
+    float ggx2 = GeometrychlickGGX(NoL, k);
+
+    return ggx1 * ggx2;
+}
+
+static Color FresnelEquation(Vector3d N, Vector3d V, Vector3d F)
+{
+    float NoV = dot(N, V);
+    Vector3d res = F + (Vector3d(1.0f) - F) * Math::pow(1.0f - NoV, 5);
+    return Color(res.x(), res.y(), res.z());
+}
+

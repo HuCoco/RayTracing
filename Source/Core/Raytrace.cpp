@@ -82,15 +82,22 @@ static Color computeBlinnPhongLighting(const Vector3d &L, const Vector3d &N, con
 }
 
 
-static Color computeBRDF(Color SpecularColor, float Roughness, Vector3d L, Vector3d V, Vector3d N)
+static Color computeBRDF(Vector3d L, Vector3d V, Vector3d N, float Roughness, const Material &mat, const PointLightSource &ptLight)
 {
-    Color res;
-    Vector3d spec;
-    spec.setXYZ(SpecularColor.r(), SpecularColor.g(), SpecularColor.b());
-    Vector3d a = MicrofacetSpecular(spec, Roughness, L, V, N);
-    res.setRGB(a.x(), a.y(), a.z());
-    res.clamp();
-    return res;
+    Color diffuse = mat.k_d * (1 / PI);
+    float NoV = dot(N, V);
+    float NoL = dot(N, L);
+    Vector3d H = L + V;
+    H = H.makeUnitVector();
+    float NoH = dot(N, H);
+    float Fn = NormalDistributionFunction(NoH, Roughness);
+    float Fg = GeometryFunction(N, V, L, Roughness);
+    Vector3d surfaceColor(mat.k_d.r(), mat.k_d.g(), mat.k_d.b());
+    Color Ff = FresnelEquation(N, V, Vector3d(0.04f) * surfaceColor);
+    Color cook_torrance = (Fn*Fg*Ff) / (4 * NoV * NoL);
+    Color spec = cook_torrance * ptLight.I_source * dot(L, N);
+
+    return diffuse + spec;
 }
 
 
@@ -174,7 +181,7 @@ Color Raytrace::TraceRay( const Ray &ray, const Scene &scene,
         }
         result += computePhongLighting(L, N, V, *nearestHitRec.mat_ptr, scene.ptLight[i]);
         //result += computeBlinnPhongLighting(L, N, V, *nearestHitRec.mat_ptr, scene.ptLight[i]);
-        //result += computeBRDF(nearestHitRec.mat_ptr->k_a, 2.0F, L, V, N);// *scene.ptLight[i].I_source;
+        //result += computeBRDF(L, V, N, 0.5f, *nearestHitRec.mat_ptr, scene.ptLight[i]);// *scene.ptLight[i].I_source;
     }
     //***********************************************
 

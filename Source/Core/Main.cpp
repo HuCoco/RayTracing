@@ -193,6 +193,10 @@ int main()
             {
                 AsynRenderer::GetInstance()->RenderScene(&scene2, &gImage, 8);
             }
+            if (ImGui::Button("Gamma"))
+            {
+                gImage.gammaCorrect();
+            }
             ImGui::End();
         }
 

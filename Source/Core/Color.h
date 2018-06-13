@@ -17,6 +17,7 @@ public:
 // Constructors
 
     Color() {}
+    Color(const float  c) { data[0] = c; data[1] = c; data[2] = c; }
     Color( const float  c[3] ) { data[0] = c[0]; data[1] = c[1]; data[2] = c[2]; }
     Color( const double c[3] ) { data[0] = (float)c[0]; data[1] = (float)c[1]; data[2] = (float)c[2]; }
 	Color( float r, float g, float b ) { data[0] = r; data[1] = g; data[2] = b; }

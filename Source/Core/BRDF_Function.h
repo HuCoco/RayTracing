@@ -189,7 +189,8 @@ static Vector3d MicrofacetSpecular(Vector3d SpecularColor, float Roughness, Vect
 
 static float NormalDistributionFunction(float NoH, float Roughness)
 {
-    float a2 = Roughness * Roughness;
+    float a = Roughness * Roughness;
+    float a2 = a * a;
     float NdotH = Math::max(NoH, 0.0f);
     float NdotH2 = NdotH * NdotH;
 
@@ -251,4 +252,3 @@ static Color FresnelEquation(Vector3d N, Vector3d V, Vector3d F)
     Vector3d res = F + (Vector3d(1.0f) - F) * Math::pow(1.0f - NoV, 5);
     return Color(res.x(), res.y(), res.z());
 }
-

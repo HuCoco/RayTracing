@@ -82,7 +82,7 @@ static Color computeBlinnPhongLighting(const Vector3d &L, const Vector3d &N, con
 }
 
 
-static Color computeBRDF(Vector3d L, Vector3d V, Vector3d N, float Roughness, const Material &mat, const PointLightSource &ptLight)
+static Color computeBRDF(Vector3d L, Vector3d V, Vector3d N, float Roughness, const Material &mat, const PointLightSource &ptLight, float metallic, float attenuation)
 {
     Color diffuse = mat.k_d * (1 / PI);
     float NoV = dot(N, V);
@@ -90,14 +90,24 @@ static Color computeBRDF(Vector3d L, Vector3d V, Vector3d N, float Roughness, co
     Vector3d H = L + V;
     H = H.makeUnitVector();
     float NoH = dot(N, H);
-    float Fn = NormalDistributionFunction(NoH, Roughness);
-    float Fg = GeometryFunction(N, V, L, Roughness);
-    Vector3d surfaceColor(mat.k_d.r(), mat.k_d.g(), mat.k_d.b());
-    Color Ff = FresnelEquation(N, V, Vector3d(0.04f) * surfaceColor);
-    Color cook_torrance = mat.k_r * (Fn*Fg*Ff) / (4 * NoV * NoL);
-    Color spec = cook_torrance * ptLight.I_source * dot(L, N);
 
-    return diffuse + spec;
+    Vector3d F0 = Vector3d(0.04);
+    Vector3d albedo = Vector3d(mat.k_d.r(), mat.k_d.g(), mat.k_d.b());
+    F0 = Lerp(F0, albedo, metallic);
+    Color F = FresnelEquation(N, V, F0);
+    
+    float NDF = NormalDistributionFunction(NoH, Roughness);
+    float G = GeometryFunction(N, V, L, Roughness);
+    Color nominator = NDF * G * F;
+    float denominator = 4.0 * Math::max(NoV, 0.0f) * Math::max(NoL, 0.0f) + 0.001f;
+    Color specular = nominator / denominator;
+
+    Color kS = F;
+    Color kD = Color(1.0,1.0,1.0) - kS;
+    kD *= 1.0 - metallic;
+    float NdotL = Math::max(NoL, 0.0f);
+
+    return (kD * mat.k_d / PI + specular) * (attenuation * ptLight.I_source) * NdotL;
 }
 
 
@@ -182,12 +192,12 @@ Color Raytrace::TraceRay( const Ray &ray, const Scene &scene,
         }
         //result += computePhongLighting(L, N, V, *nearestHitRec.mat_ptr, scene.ptLight[i])* (1.0 / scene.numPtLights);
         //result += computeBlinnPhongLighting(L, N, V, *nearestHitRec.mat_ptr, scene.ptLight[i]);
-        result += computeBRDF(L, V, N, 0.5f, *nearestHitRec.mat_ptr, scene.ptLight[i]) * (1.0 / scene.numPtLights);// *scene.ptLight[i].I_source;
-        
+        float attenuation = 1.0 / (MaxLength * MaxLength);
+        result += computeBRDF(L, V, N, 0.0, *nearestHitRec.mat_ptr, scene.ptLight[i], 1, attenuation);   
     }
     //***********************************************
-
-    
+    //Color ambient = Color(0.03) * nearestHitRec.mat_ptr->k_d;
+    //result = ambient + result;
 
 
 

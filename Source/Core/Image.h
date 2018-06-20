@@ -71,6 +71,8 @@ public:
     void UpdateTexture();
     inline void* GetData() { return mData; }
     inline GLuint GetGLTextureHandle() { return mGLHandle; }
+    inline uint32_t GetWidth() { return mWidth; }
+    inline uint32_t GetHeight() { return mHeight; }
 private:
 
 	int mWidth, mHeight;

@@ -35,7 +35,7 @@
 #include <GLFW/glfw3.h>
 
 #include <Renderer/AsynRenderer.h>
-
+#include <Core/Texture.h>
 using namespace std;
 
 
@@ -113,11 +113,10 @@ static void glfw_error_callback(int error, const char* description)
     fprintf(stderr, "Error %d: %s\n", error, description);
 }
 
-
+Texture tex;
 int main()
 {
     AsynRenderer::GetInstance()->Initialize();
-
 
 //	atexit( WaitForEnterKeyBeforeExit );
 //
@@ -174,7 +173,8 @@ int main()
     io.Fonts->AddFontFromFileTTF("Resource/Fonts/Roboto-Medium.ttf", 16.0f);
 
     gImage.setImage(scene2.camera.getImageWidth(), scene2.camera.getImageHeight());
-
+    
+    tex.Load("D:/RayTracing/Resource/Textures/rock_vstreaks/rock_vstreaks_Base_Color.png");
     
     //RenderImage("C:/Users/Huke/Desktop/ImageTest/out2.tga", scene2, reflectLevels2, hasShadow2);
     while (!glfwWindowShouldClose(window))
@@ -187,7 +187,7 @@ int main()
             ImGui::Begin("Option");
             if (ImGui::Button("Start"))
             {
-                   AsynRenderer::GetInstance()->RenderScene(&scene1, &gImage, 8);
+                AsynRenderer::GetInstance()->RenderScene(&scene1, &gImage, 8);
             }
             if (ImGui::Button("Start2"))
             {
@@ -202,13 +202,14 @@ int main()
 
         {
             ImGui::Begin("Option");
+            
             ImTextureID my_tex_id = reinterpret_cast<ImTextureID>(gImage.GetGLTextureHandle());//io.Fonts->TexID;
-            float my_tex_w = imageWidth1;//(float)io.Fonts->TexWidth;
-            float my_tex_h = imageHeight1;//(float)io.Fonts->TexHeight;
+            float my_tex_w = (float)gImage.GetWidth();//(float)io.Fonts->TexWidth;
+            float my_tex_h = (float)gImage.GetHeight();//(float)io.Fonts->TexHeight;
             ImGui::Image(my_tex_id, ImVec2(my_tex_w, my_tex_h), ImVec2(0, 0), ImVec2(1, 1), ImColor(255, 255, 255, 255), ImColor(255, 255, 255, 128));
             ImGui::End();
         }
-
+        
         // Rendering
         int display_w, display_h;
         glfwGetFramebufferSize(window, &display_w, &display_h);

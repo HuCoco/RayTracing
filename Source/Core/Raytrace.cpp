@@ -23,9 +23,10 @@
 #include "Scene.h"
 #include "Raytrace.h"
 #include "BRDF_Function.h"
+#include "Texture.h"
 using namespace std;
 
-
+extern Texture tex;
 // This is for avoiding the "epsilon problem" or the shadow acne problem.
 #define DEFAULT_TMIN	10e-6		
 
@@ -84,7 +85,8 @@ static Color computeBlinnPhongLighting(const Vector3d &L, const Vector3d &N, con
 
 static Color computeBRDF(Vector3d L, Vector3d V, Vector3d N, float Roughness, const Material &mat, const PointLightSource &ptLight, float metallic, float attenuation)
 {
-    Color diffuse = mat.k_d * (1 / PI);
+    Color diffuse = tex.GetPixel(0.33, 0.44)* (1 / PI);
+    //Color diffuse = mat.k_d * (1 / PI);
     float NoV = dot(N, V);
     float NoL = dot(N, L);
     Vector3d H = L + V;

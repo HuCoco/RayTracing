@@ -220,7 +220,33 @@ int main()
             ImTextureID my_tex_id = reinterpret_cast<ImTextureID>(gImage.GetGLTextureHandle());//io.Fonts->TexID;
             float my_tex_w = (float)gImage.GetWidth();//(float)io.Fonts->TexWidth;
             float my_tex_h = (float)gImage.GetHeight();//(float)io.Fonts->TexHeight;
+            ImVec2 pos = ImGui::GetCursorScreenPos();
             ImGui::Image(my_tex_id, ImVec2(my_tex_w, my_tex_h), ImVec2(0, 0), ImVec2(1, 1), ImColor(255, 255, 255, 255), ImColor(255, 255, 255, 128));
+            
+            if (ImGui::IsItemHovered())
+            {
+                ImGui::BeginTooltip();
+                float region_sz = 32.0f;
+                float region_x = io.MousePos.x - pos.x - region_sz * 0.5f;
+                if (region_x < 0.0f)
+                    region_x = 0.0f;
+                else if (region_x > my_tex_w - region_sz)
+                    region_x = my_tex_w - region_sz;
+                float region_y = io.MousePos.y - pos.y - region_sz * 0.5f;
+                if (region_y < 0.0f)
+                    region_y = 0.0f;
+                else if (region_y > my_tex_h - region_sz)
+                    region_y = my_tex_h - region_sz;
+                float zoom = 4.0f;
+                ImGui::Text("Min: (%.2f, %.2f)", region_x, region_y);
+                ImGui::Text("Max: (%.2f, %.2f)", region_x + region_sz, region_y + region_sz);
+
+                ImVec2 uv0 = ImVec2((region_x) / my_tex_w, (region_y) / my_tex_h);
+                ImVec2 uv1 = ImVec2((region_x + region_sz) / my_tex_w, (region_y + region_sz) / my_tex_h);
+                ImGui::Text("uv: (%.2f, %.2f)", uv0.x, uv0.y);
+                ImGui::Image(my_tex_id, ImVec2(region_sz * zoom, region_sz * zoom), uv0, uv1, ImColor(255, 255, 255, 255), ImColor(255, 255, 255, 128));
+                ImGui::EndTooltip();
+            }
             ImGui::End();
         }
         
@@ -478,7 +504,7 @@ void DefineScene3(Scene &scene, int imageWidth, int imageHeight)
         for (int j = 0; j < 5; j++)
         {
             emp_mats[j * 6 + i].albedo = Color(1.0f, 0.0f, 0.0f);
-            emp_mats[j * 6 + i].metallic = 0.1f + i * 0.15f;// i * (1.0f / 5.0f);
+            emp_mats[j * 6 + i].metallic = 0.25f + i * 0.15f;// i * (1.0f / 5.0f);
             emp_mats[j * 6 + i].roughness = 0.1f + j * 0.2f;
         }
     }

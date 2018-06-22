@@ -106,7 +106,7 @@ void AsynRenderer::DoTask(void* param)
             Color pixelColor = Color(0, 0, 0);
             for (float i = 0.0f; i <= 1.0f; i += 0.1f)
             {
-                for (float j = 0.0f; j <= 1.0f; j += 0.1f)
+                for (float j = 0.1f; j <= 1.0f; j += 0.1f)
                 {
                     double pixelPosX = x + i;
                     double pixelPosY = y + j;

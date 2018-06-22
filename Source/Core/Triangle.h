@@ -12,7 +12,7 @@ public:
 	Vector3d n0, n1, n2; // Vertex normals.
 
 
-	Triangle( const Vector3d &v0_, const Vector3d &v1_, const Vector3d &v2_, const Material *mat_ptr )
+	Triangle( const Vector3d &v0_, const Vector3d &v1_, const Vector3d &v2_, Material *mat_ptr )
 	{
 		v0 = v0_;  v1 = v1_;  v2 = v2_;
 		n0 = n1 = n2 = triNormal( v0, v1, v2 );
@@ -21,7 +21,7 @@ public:
 
 
 	Triangle( const Vector3d &v0_, const Vector3d &v1_, const Vector3d &v2_,
-			  const Vector3d &n0_, const Vector3d &n1_, const Vector3d &n2_, const Material *mat_ptr )
+			  const Vector3d &n0_, const Vector3d &n1_, const Vector3d &n2_, Material *mat_ptr )
 	{
 		v0 = v0_;  v1 = v1_;  v2 = v2_; 
 		n0 = n0_;  n1 = n1_;  n2 = n2_;  

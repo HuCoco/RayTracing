@@ -14,8 +14,10 @@ struct SurfaceHitRecord
 {
 	double t;		   // Ray hits at p = Ray.origin() + t * Ray.direction().
 	Vector3d p;		   // The point of intersection.
+    float u;
+    float v;
 	Vector3d normal;   // Surface normal at p. May not be unit vector.
-	const Material *mat_ptr; // Pointer to the surface material.
+	Material *mat_ptr; // Pointer to the surface material.
 };
 
 
@@ -24,7 +26,7 @@ class Surface
 {
 public:
 
-	const Material *matp;	// Material of the surface.
+	Material *matp;	// Material of the surface.
 
 
 	// Does a Ray hit the Surface?

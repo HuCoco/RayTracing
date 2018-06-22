@@ -31,6 +31,8 @@ bool Triangle::hit( const Ray &r, double tmin, double tmax, SurfaceHitRecord &re
 		double alpha = 1.0 - beta - gamma;
 		rec.normal = alpha * n0 + beta * n1 + gamma * n2;
 		rec.mat_ptr = matp;
+        rec.u = 0.5f;
+        rec.v = 0.5f;
 		return true;
 	}
 	return false;

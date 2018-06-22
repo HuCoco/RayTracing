@@ -12,7 +12,7 @@ public:
     double radius;
 
 
-	Sphere( const Vector3d &theCenter, double theRadius, const Material *mat_ptr )
+	Sphere( const Vector3d &theCenter, double theRadius, Material *mat_ptr )
 		{ center = theCenter;  radius = theRadius;  matp = mat_ptr; }
 
 

@@ -23,8 +23,12 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-
 struct Material
+{
+
+};
+
+struct EMPMaterial : public Material
 {
 	Color k_a;
 	Color k_d;
@@ -35,5 +39,11 @@ struct Material
 	Color k_rg;
 };
 
+struct PBRMaterial : public Material
+{
+    Color albedo;
+    float metallic;
+    float roughness;
+};
 
 #endif // _MATERIAL_H_

@@ -18,6 +18,8 @@ bool Plane::hit( const Ray &r, double tmin, double tmax, SurfaceHitRecord &rec )
 	rec.p = r.pointAtParam(t);
 	rec.normal = N;
 	rec.mat_ptr = matp;
+    rec.u = 0.5f;
+    rec.v = 0.5f;
 	return true;
 }
 

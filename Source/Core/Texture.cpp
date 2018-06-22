@@ -40,17 +40,17 @@ void Texture::Load(const char* path)
     uint32_t Pitch = FreeImage_GetPitch(bitmap);
     mWidth = FreeImage_GetWidth(bitmap);
     mHeight = FreeImage_GetHeight(bitmap);
-    mData = new char[mWidth * mHeight * 4];
+    mData = new unsigned char[mWidth * mHeight * 4];
     BYTE* Bits = FreeImage_GetBits(bitmap);
 
     for (uint32_t i = 0; i < mHeight; ++i)
     {
         for (uint32_t j = 0; j < mWidth; ++j)
         {
-            mData[(i * mWidth + j) * 4 + 0] = 0;//Bits[(i * Pitch) + j * 4 + 2];
-            mData[(i * mWidth + j) * 4 + 1] = 0;//Bits[(i * Pitch) + j * 4 + 1];
-            mData[(i * mWidth + j) * 4 + 2] = 0;//Bits[(i * Pitch) + j * 4 + 0];
-            mData[(i * mWidth + j) * 4 + 3] = 0;//Bits[(i * Pitch) + j * 4 + 3];
+            mData[(i * mWidth + j) * 4 + 0] = Bits[(i * Pitch) + j * 4 + 2];
+            mData[(i * mWidth + j) * 4 + 1] = Bits[(i * Pitch) + j * 4 + 1];
+            mData[(i * mWidth + j) * 4 + 2] = Bits[(i * Pitch) + j * 4 + 0];
+            mData[(i * mWidth + j) * 4 + 3] = Bits[(i * Pitch) + j * 4 + 3];
         }
     }
 }
@@ -72,10 +72,15 @@ void Texture::SetPixel(uint32_t x, uint32_t y, Color color)
 
 Color Texture::GetPixel(float u, float v)
 {
-    uint32_t x = u * mWidth;
-    uint32_t y = v * mHeight;
-    float r = (float)mData[y * mWidth + x + 0] / 255.0f;
-    float b = (float)mData[y * mWidth + x + 1] / 255.0f;
-    float g = (float)mData[y * mWidth + x + 2] / 255.0f;
+    uint32_t x = u * (mWidth-1);
+    uint32_t y = v * (mHeight-1);
+
+    unsigned char rr = mData[(y * mWidth + x) * 4 + 0];
+    unsigned char gg = mData[(y * mWidth + x) * 4 + 1];
+    unsigned char bb = mData[(y * mWidth + x) * 4 + 2];
+    
+    float r = (float)mData[(y * mWidth + x) * 4 + 0] / 255.0f;
+    float g = (float)mData[(y * mWidth + x) * 4 + 1] / 255.0f;
+    float b = (float)mData[(y * mWidth + x) * 4 + 2] / 255.0f;
     return Color(r, g, b);
 }

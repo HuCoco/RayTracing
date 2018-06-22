@@ -42,7 +42,7 @@ void AsynRenderer::Finalize()
 }
 
 
-void AsynRenderer::RenderScene(Scene* scene, Image* output, uint32_t numProcesser)
+void AsynRenderer::RenderScene(Scene* scene, Image* output, uint32_t numProcesser, uint32_t hasShadow, uint32_t reflectLevels)
 {
     if (mActivateThreads != 0)
     {
@@ -65,6 +65,8 @@ void AsynRenderer::RenderScene(Scene* scene, Image* output, uint32_t numProcesse
         mTaskList[i].output = output;
         mTaskList[i].processerId = i;
         mTaskList[i].callback = FinishTask;
+        mTaskList[i].reflectLevels = reflectLevels;
+        mTaskList[i].hasShadow = hasShadow;
 
         ThreadInitializeDescription desc;
         desc.Affinity = 1 << i;
@@ -99,8 +101,6 @@ void AsynRenderer::DoTask(void* param)
     AsynSceneRenderTask* task = (AsynSceneRenderTask*)param;
     for (uint32_t y = task->beginHeight; y < task->endHeight; y++)
     {
-        
-
         for (uint32_t x = 0; x < task->width; x++)
         {
             Color pixelColor = Color(0, 0, 0);
@@ -111,7 +111,7 @@ void AsynRenderer::DoTask(void* param)
                     double pixelPosX = x + i;
                     double pixelPosY = y + j;
                     Ray ray = task->scene->camera.getRay(pixelPosX, pixelPosY);
-                    pixelColor += Raytrace::TraceRay(ray, *task->scene, 2, true);
+                    pixelColor += Raytrace::TraceRay(ray, *task->scene, task->reflectLevels, task->hasShadow);
 
                     
                 }

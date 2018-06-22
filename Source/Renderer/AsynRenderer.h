@@ -17,6 +17,9 @@ struct AsynSceneRenderTask
     uint32_t endHeight;
     uint32_t processerId;
     FinishTaskCallback callback;
+
+    uint32_t reflectLevels;
+    bool hasShadow;
 };
 
 
@@ -29,7 +32,7 @@ public:
     static AsynRenderer* GetInstance();
     void Initialize();
     void Finalize();
-    void RenderScene(Scene* scene, Image* output,uint32_t numProcesser);
+    void RenderScene(Scene* scene, Image* output,uint32_t numProcesser, uint32_t hasShadow, uint32_t reflectLevels);
     bool IsFinishAllTask();
     void ClearTasks();
     static void DoTask(void* param);

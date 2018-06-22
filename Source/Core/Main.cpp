@@ -51,14 +51,22 @@ static const int imageHeight2 = 480;
 static const int reflectLevels2 = 2;  // 0 -- object does not reflect scene.
 static const int hasShadow2 = true;
 
-Image gImage;
+static const int imageWidth3 = 640;
+static const int imageHeight3 = 480;
+static const int reflectLevels3 = 1;  // 0 -- object does not reflect scene.
+static const int hasShadow3 = false;
 
+
+Image gImage;
+Texture lut_tex;
 ///////////////////////////////////////////////////////////////////////////
 // Raytrace the whole image of the scene and write it to a file.
 ///////////////////////////////////////////////////////////////////////////
 
 void RenderImage( const char *imageFilename, const Scene &scene, int reflectLevels, bool hasShadow )
 {
+
+
 	int imgWidth = scene.camera.getImageWidth();
 	int imgHeight = scene.camera.getImageHeight();
 
@@ -98,6 +106,9 @@ void RenderImage( const char *imageFilename, const Scene &scene, int reflectLeve
 
 void DefineScene1( Scene &scene, int imageWidth, int imageHeight );
 void DefineScene2( Scene &scene, int imageWidth, int imageHeight );
+void DefineScene3( Scene &scene, int imageWidth, int imageHeight);
+
+
 
 
 
@@ -140,6 +151,9 @@ int main()
 	Scene scene2;
 	DefineScene2( scene2, imageWidth2, imageHeight2 );
 
+    Scene scene3;
+    DefineScene3(scene3, imageWidth3, imageHeight3);
+
 // Render Scene 2.
 
 	printf( "Render Scene 2...\n" );
@@ -174,8 +188,8 @@ int main()
 
     gImage.setImage(scene2.camera.getImageWidth(), scene2.camera.getImageHeight());
     
-    tex.Load("D:/RayTracing/Resource/Textures/rock_vstreaks/rock_vstreaks_Base_Color.png");
-    
+
+    lut_tex.Load("D:/RayTracing/Resource/Textures/pbdf_lut/ibl_brdf_lut.png");
     //RenderImage("C:/Users/Huke/Desktop/ImageTest/out2.tga", scene2, reflectLevels2, hasShadow2);
     while (!glfwWindowShouldClose(window))
     {   
@@ -187,11 +201,11 @@ int main()
             ImGui::Begin("Option");
             if (ImGui::Button("Start"))
             {
-                AsynRenderer::GetInstance()->RenderScene(&scene1, &gImage, 8);
+                AsynRenderer::GetInstance()->RenderScene(&scene3, &gImage, 8, hasShadow3, reflectLevels3);
             }
             if (ImGui::Button("Start2"))
             {
-                AsynRenderer::GetInstance()->RenderScene(&scene2, &gImage, 8);
+                AsynRenderer::GetInstance()->RenderScene(&scene2, &gImage, 8, hasShadow2, reflectLevels2);
             }
             if (ImGui::Button("Gamma"))
             {
@@ -254,42 +268,43 @@ void DefineScene1( Scene &scene, int imageWidth, int imageHeight )
 // Define materials.
 
 	scene.numMaterials = 5;
-	scene.material = new Material[ scene.numMaterials ];
+    EMPMaterial* emp_mats = new EMPMaterial[scene.numMaterials];
+    scene.material = emp_mats;
 
 	// Light red.
-	scene.material[0].k_d = Color( 0.8f, 0.4f, 0.4f );
-	scene.material[0].k_a = scene.material[0].k_d;
-	scene.material[0].k_r = Color( 0.8f, 0.8f, 0.8f ) / 1.5f;
-	scene.material[0].k_rg = Color( 0.8f, 0.8f, 0.8f ) / 3.0f;
-	scene.material[0].n = 32.0f;
+	emp_mats[0].k_d = Color( 0.8f, 0.4f, 0.4f );
+	emp_mats[0].k_a = Color(0.8f, 0.4f, 0.4f);
+	emp_mats[0].k_r = Color( 0.8f, 0.8f, 0.8f ) / 1.5f;
+	emp_mats[0].k_rg = Color( 0.8f, 0.8f, 0.8f ) / 3.0f;
+	emp_mats[0].n = 32.0f;
 
 	// Light green.
-	scene.material[1].k_d = Color( 0.4f, 0.8f, 0.4f );
-	scene.material[1].k_a = scene.material[1].k_d;
-	scene.material[1].k_r = Color( 0.8f, 0.8f, 0.8f ) / 1.5f;
-	scene.material[1].k_rg = Color( 0.8f, 0.8f, 0.8f ) / 3.0f;
-	scene.material[1].n = 64.0f;
+	emp_mats[1].k_d = Color( 0.4f, 0.8f, 0.4f );
+	emp_mats[1].k_a = Color(0.4f, 0.8f, 0.4f);
+	emp_mats[1].k_r = Color( 0.8f, 0.8f, 0.8f ) / 1.5f;
+	emp_mats[1].k_rg = Color( 0.8f, 0.8f, 0.8f ) / 3.0f;
+	emp_mats[1].n = 64.0f;
 
 	// Light blue.
-	scene.material[2].k_d = Color( 0.4f, 0.4f, 0.8f ) * 0.9f;
-	scene.material[2].k_a = scene.material[2].k_d;
-	scene.material[2].k_r = Color( 0.8f, 0.8f, 0.8f ) / 1.5f;
-	scene.material[2].k_rg = Color( 0.8f, 0.8f, 0.8f ) / 2.5f;
-	scene.material[2].n = 64.0f;
+	emp_mats[2].k_d = Color( 0.4f, 0.4f, 0.8f ) * 0.9f;
+	emp_mats[2].k_a = Color(0.4f, 0.4f, 0.8f) * 0.9f;
+	emp_mats[2].k_r = Color( 0.8f, 0.8f, 0.8f ) / 1.5f;
+	emp_mats[2].k_rg = Color( 0.8f, 0.8f, 0.8f ) / 2.5f;
+	emp_mats[2].n = 64.0f;
 
 	// Yellow.
-	scene.material[3].k_d = Color( 0.6f, 0.6f, 0.2f );
-	scene.material[3].k_a = scene.material[3].k_d;
-	scene.material[3].k_r = Color( 0.8f, 0.8f, 0.8f ) / 1.5f;
-	scene.material[3].k_rg = Color( 0.8f, 0.8f, 0.8f ) / 3.0f;
-	scene.material[3].n = 64.0f;
+	emp_mats[3].k_d = Color( 0.6f, 0.6f, 0.2f );
+	emp_mats[3].k_a = Color(0.6f, 0.6f, 0.2f);
+	emp_mats[3].k_r = Color( 0.8f, 0.8f, 0.8f ) / 1.5f;
+	emp_mats[3].k_rg = Color( 0.8f, 0.8f, 0.8f ) / 3.0f;
+	emp_mats[3].n = 64.0f;
 
 	// Gray.
-	scene.material[4].k_d = Color( 0.6f, 0.6f, 0.6f );
-	scene.material[4].k_a = scene.material[4].k_d;
-	scene.material[4].k_r = Color( 0.6f, 0.6f, 0.6f );
-	scene.material[4].k_rg = Color( 0.8f, 0.8f, 0.8f ) / 3.0f;
-	scene.material[4].n = 128.0f;
+    emp_mats[4].k_d = Color(0.6f, 0.6f, 0.6f);
+    emp_mats[4].k_a = Color(0.6f, 0.6f, 0.6f);
+    emp_mats[4].k_r = Color(0.6f, 0.6f, 0.6f);
+    emp_mats[4].k_rg = Color(0.8f, 0.8f, 0.8f) / 3.0f;
+    emp_mats[4].n = 128.0f;
 
 
 // Define point light sources.
@@ -370,37 +385,43 @@ void DefineScene2( Scene &scene, int imageWidth, int imageHeight )
     scene.amLight.I_a = Color( 1.0f, 1.0f, 1.0f ) * 0.35f;
     
     scene.numMaterials = 5;
-    scene.material = new Material[ scene.numMaterials ];
-    
-    scene.material[0].k_d = Color( 0.8f, 0.4f, 0.4f );
-    scene.material[0].k_a = scene.material[0].k_d;
-    scene.material[0].k_r = Color( 0.8f, 0.8f, 0.8f ) / 1.5f;
-    scene.material[0].k_rg = Color( 0.8f, 0.8f, 0.8f ) / 3.0f;
-    scene.material[0].n = 64.0f;
-    
-    scene.material[1].k_d = Color( 0.4f, 0.8f, 0.4f );
-    scene.material[1].k_a = scene.material[1].k_d;
-    scene.material[1].k_r = Color( 0.8f, 0.8f, 0.8f ) / 1.5f;
-    scene.material[1].k_rg = Color( 0.8f, 0.8f, 0.8f ) / 3.0f;
-    scene.material[1].n = 64.0f;
-    
-    scene.material[2].k_d = Color( 0.4f, 0.4f, 0.8f ) * 0.9f;
-    scene.material[2].k_a = scene.material[2].k_d;
-    scene.material[2].k_r = Color( 0.8f, 0.8f, 0.8f ) / 1.5f;
-    scene.material[2].k_rg = Color( 0.8f, 0.8f, 0.8f ) / 2.5f;
-    scene.material[2].n = 64.0f;
-    
-    scene.material[3].k_d = Color( 0.6f, 0.6f, 0.2f );
-    scene.material[3].k_a = scene.material[3].k_d;
-    scene.material[3].k_r = Color( 0.8f, 0.8f, 0.8f ) / 1.5f;
-    scene.material[3].k_rg = Color( 0.8f, 0.8f, 0.8f ) / 3.0f;
-    scene.material[3].n = 64.0f;
-    
-    scene.material[4].k_d = Color( 0.6f, 0.6f, 0.6f );
-    scene.material[4].k_a = scene.material[4].k_d;
-    scene.material[4].k_r = Color( 0.6f, 0.6f, 0.6f );
-    scene.material[4].k_rg = Color( 0.8f, 0.8f, 0.8f ) / 3.0f;
-    scene.material[4].n = 128.0f;
+    EMPMaterial* emp_mats = new EMPMaterial[scene.numMaterials];
+    scene.material = emp_mats;
+
+    // Light red.
+    emp_mats[0].k_d = Color(0.8f, 0.4f, 0.4f);
+    emp_mats[0].k_a = Color(0.8f, 0.4f, 0.4f);
+    emp_mats[0].k_r = Color(0.8f, 0.8f, 0.8f) / 1.5f;
+    emp_mats[0].k_rg = Color(0.8f, 0.8f, 0.8f) / 3.0f;
+    emp_mats[0].n = 32.0f;
+
+    // Light green.
+    emp_mats[1].k_d = Color(0.4f, 0.8f, 0.4f);
+    emp_mats[1].k_a = Color(0.4f, 0.8f, 0.4f);
+    emp_mats[1].k_r = Color(0.8f, 0.8f, 0.8f) / 1.5f;
+    emp_mats[1].k_rg = Color(0.8f, 0.8f, 0.8f) / 3.0f;
+    emp_mats[1].n = 64.0f;
+
+    // Light blue.
+    emp_mats[2].k_d = Color(0.4f, 0.4f, 0.8f) * 0.9f;
+    emp_mats[2].k_a = Color(0.4f, 0.4f, 0.8f) * 0.9f;
+    emp_mats[2].k_r = Color(0.8f, 0.8f, 0.8f) / 1.5f;
+    emp_mats[2].k_rg = Color(0.8f, 0.8f, 0.8f) / 2.5f;
+    emp_mats[2].n = 64.0f;
+
+    // Yellow.
+    emp_mats[3].k_d = Color(0.6f, 0.6f, 0.2f);
+    emp_mats[3].k_a = Color(0.6f, 0.6f, 0.2f);
+    emp_mats[3].k_r = Color(0.8f, 0.8f, 0.8f) / 1.5f;
+    emp_mats[3].k_rg = Color(0.8f, 0.8f, 0.8f) / 3.0f;
+    emp_mats[3].n = 64.0f;
+
+    // Gray.
+    emp_mats[4].k_d = Color(0.6f, 0.6f, 0.6f);
+    emp_mats[4].k_a = Color(0.6f, 0.6f, 0.6f);
+    emp_mats[4].k_r = Color(0.6f, 0.6f, 0.6f);
+    emp_mats[4].k_rg = Color(0.8f, 0.8f, 0.8f) / 3.0f;
+    emp_mats[4].n = 128.0f;
     
     scene.numPtLights = 2;
     scene.ptLight = new PointLightSource[ scene.numPtLights ];
@@ -440,4 +461,53 @@ void DefineScene2( Scene &scene, int imageWidth, int imageHeight )
     //***********************************************
     
     
+}
+
+
+void DefineScene3(Scene &scene, int imageWidth, int imageHeight)
+{
+    scene.backgroundColor = Color(0.0f, 0.0f, 0.0f);
+
+    scene.amLight.I_a = Color(1.0f, 1.0f, 1.0f) * 0.35f;
+
+    scene.numMaterials = 30;
+    PBRMaterial* emp_mats = new PBRMaterial[scene.numMaterials];
+    scene.material = emp_mats;
+    for (int i = 0; i < 6; i++)
+    {
+        for (int j = 0; j < 5; j++)
+        {
+            emp_mats[j * 6 + i].albedo = Color(1.0f, 0.0f, 0.0f);
+            emp_mats[j * 6 + i].metallic = 0.1f + i * 0.15f;// i * (1.0f / 5.0f);
+            emp_mats[j * 6 + i].roughness = 0.1f + j * 0.2f;
+        }
+    }
+
+
+    scene.numSurfaces = 30;
+    scene.surfacep = new SurfacePtr[scene.numSurfaces];
+
+
+    for (int i = 0; i < 6; i++)
+    {
+        for (int j = 0; j < 5; j++)
+        {
+            scene.surfacep[j * 6 + i] = new Sphere(Vector3d(35.0 - i * 14, 25.0 - j * 12, 100.0), 5.0, &(reinterpret_cast<PBRMaterial*>(scene.material)[j * 6 + i]));
+        }
+        
+    }
+
+
+    scene.numPtLights = 2;
+    scene.ptLight = new PointLightSource[scene.numPtLights];
+
+    scene.ptLight[0].I_source = Color(300.0, 300.0, 300.0);
+    scene.ptLight[0].position = Vector3d(30.0, 40.0, 80.0);
+
+    scene.ptLight[1].I_source = Color(300.0, 300.0, 300.0);
+    scene.ptLight[1].position = Vector3d(-30.0, 40.0, 80.0);
+
+    scene.camera = Camera(Vector3d(0.0,0.0,0.0), Vector3d(0.0, 0.0, 10.0), Vector3d(0.0, 1.0, 0.0),
+        (-1.0 * imageWidth) / imageHeight, (1.0 * imageWidth) / imageHeight, -1.0, 1.0, 3.0,
+        imageWidth, imageHeight);;
 }

@@ -19,5 +19,5 @@ private:
     uint32_t mWidth;
     uint32_t mHeight;
     GLuint  mHandle;
-    char* mData;
+    unsigned char* mData;
 };

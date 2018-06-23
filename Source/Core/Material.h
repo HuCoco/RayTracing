@@ -23,13 +23,22 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
+enum MaterialType
+{
+    EMP,
+    PBR,
+};
+
 struct Material
 {
+    inline Material(MaterialType t) : type(t) {}
 
+    MaterialType type;
 };
 
 struct EMPMaterial : public Material
 {
+    EMPMaterial():Material(EMP) {}
 	Color k_a;
 	Color k_d;
 	Color k_r;
@@ -41,6 +50,7 @@ struct EMPMaterial : public Material
 
 struct PBRMaterial : public Material
 {
+    PBRMaterial() :Material(PBR) {}
     Color albedo;
     float metallic;
     float roughness;

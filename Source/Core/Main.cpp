@@ -9,7 +9,7 @@
 // FILE: Main.cpp
 
 
-
+#include <Platform/Platform.h>
 #include <cstdlib>
 #include <cstdio>
 #include <cmath>
@@ -40,21 +40,24 @@ using namespace std;
 
 
 // Constants for Scene 1.
-static const int imageWidth1 = 640;
-static const int imageHeight1 = 480;
-static const int reflectLevels1 = 2;  // 0 -- object does not reflect scene.
-static const int hasShadow1 = true;
+static const uint32_t imageWidth1 = 640;
+static const uint32_t imageHeight1 = 480;
+static const uint32_t reflectLevels1 = 2;  // 0 -- object does not reflect scene.
+static const uint32_t numSample1 = 100;
+static const bool hasShadow1 = true;
 
 // Constants for Scene 2.
-static const int imageWidth2 = 640;
-static const int imageHeight2 = 480;
-static const int reflectLevels2 = 2;  // 0 -- object does not reflect scene.
-static const int hasShadow2 = true;
+static const uint32_t imageWidth2 = 640;
+static const uint32_t imageHeight2 = 480;
+static const uint32_t reflectLevels2 = 2;  // 0 -- object does not reflect scene.
+static const uint32_t numSample2 = 100;
+static const bool hasShadow2 = true;
 
-static const int imageWidth3 = 640;
-static const int imageHeight3 = 480;
-static const int reflectLevels3 = 1;  // 0 -- object does not reflect scene.
-static const int hasShadow3 = false;
+static const uint32_t imageWidth3 = 640;
+static const uint32_t imageHeight3 = 480;
+static const uint32_t reflectLevels3 = 1;  // 0 -- object does not reflect scene.
+static const uint32_t numSample3 = 100;
+static const bool hasShadow3 = false;
 
 
 Image gImage;
@@ -201,11 +204,11 @@ int main()
             ImGui::Begin("Option");
             if (ImGui::Button("Start"))
             {
-                AsynRenderer::GetInstance()->RenderScene(&scene3, &gImage, 8, hasShadow3, reflectLevels3);
+                AsynRenderer::GetInstance()->RenderScene(&scene3, &gImage, 8, hasShadow3, reflectLevels3, numSample3);
             }
             if (ImGui::Button("Start2"))
             {
-                AsynRenderer::GetInstance()->RenderScene(&scene2, &gImage, 8, hasShadow2, reflectLevels2);
+                AsynRenderer::GetInstance()->RenderScene(&scene2, &gImage, 8, hasShadow2, reflectLevels2, numSample2);
             }
             if (ImGui::Button("Gamma"))
             {
@@ -238,12 +241,12 @@ int main()
                 else if (region_y > my_tex_h - region_sz)
                     region_y = my_tex_h - region_sz;
                 float zoom = 4.0f;
-                ImGui::Text("Min: (%.2f, %.2f)", region_x, region_y);
-                ImGui::Text("Max: (%.2f, %.2f)", region_x + region_sz, region_y + region_sz);
+                //ImGui::Text("Min: (%.2f, %.2f)", region_x, region_y);
+                //ImGui::Text("Max: (%.2f, %.2f)", region_x + region_sz, region_y + region_sz);
 
                 ImVec2 uv0 = ImVec2((region_x) / my_tex_w, (region_y) / my_tex_h);
                 ImVec2 uv1 = ImVec2((region_x + region_sz) / my_tex_w, (region_y + region_sz) / my_tex_h);
-                ImGui::Text("uv: (%.2f, %.2f)", uv0.x, uv0.y);
+                //ImGui::Text("uv: (%.2f, %.2f)", uv0.x, uv0.y);
                 ImGui::Image(my_tex_id, ImVec2(region_sz * zoom, region_sz * zoom), uv0, uv1, ImColor(255, 255, 255, 255), ImColor(255, 255, 255, 128));
                 ImGui::EndTooltip();
             }
@@ -461,25 +464,25 @@ void DefineScene2( Scene &scene, int imageWidth, int imageHeight )
     scene.numSurfaces = 20;
     scene.surfacep = new SurfacePtr[ scene.numSurfaces ];
     
-    scene.surfacep[0] = new Plane( 0.0, 1.0, 0.0, 0.0, &(scene.material[3]) );
-    scene.surfacep[1] = new Plane( 0.0, 0.0, 1.0, 0.0, &(scene.material[4]) );
+    scene.surfacep[0] = new Plane( 0.0, 1.0, 0.0, 0.0, &(emp_mats[3]) );
+    scene.surfacep[1] = new Plane( 0.0, 0.0, 1.0, 0.0, &(emp_mats[4]) );
 
     for(int i = 0 ; i < 14 ; i++)
     {
-        scene.surfacep[2+i] = new Sphere(Vector3d( -320 + 40 * i, 20.0, 80.0 + 20 * sin(M_PI/1.8 * i) ), 20.0, &(scene.material[rand()%scene.numMaterials]));
+        scene.surfacep[2+i] = new Sphere(Vector3d( -320 + 40 * i, 20.0, 80.0 + 20 * sin(M_PI/1.8 * i) ), 20.0, &(emp_mats[rand()%scene.numMaterials]));
     }
     
     scene.surfacep[16] = new Triangle( Vector3d( 0.0, 50.0, 0.0 ), Vector3d( 50.0, 0.0, 0.0 ),
-                                      Vector3d( 0.0, 0.0, 50.0 ), &(scene.material[0]) );
+                                      Vector3d( 0.0, 0.0, 50.0 ), &(emp_mats[0]) );
     
     scene.surfacep[17] = new Triangle( Vector3d( 0.0, 50.0, 0.0 ), Vector3d( -50.0, 0.0, 0.0 ),
-                                      Vector3d( 0.0, 0.0, 50.0 ), &(scene.material[0]) );
+                                      Vector3d( 0.0, 0.0, 50.0 ), &(emp_mats[0]) );
     
     scene.surfacep[18] = new Triangle( Vector3d( 0.0, 50.0, 0.0 ), Vector3d( -50.0, 0.0, 0.0 ),
-                                      Vector3d( 50.0, 0.0, 0.0 ), &(scene.material[0]) );
+                                      Vector3d( 50.0, 0.0, 0.0 ), &(emp_mats[0]) );
     
     scene.surfacep[19] = new Triangle( Vector3d( 0.0, 0.0, 50.0 ), Vector3d( -50.0, 0.0, 0.0 ),
-                                      Vector3d( 50.0, 0.0, 0.0 ), &(scene.material[0]) );
+                                      Vector3d( 50.0, 0.0, 0.0 ), &(emp_mats[0]) );
 
     scene.camera = Camera( Vector3d( 300.0, 240.0, 300.0 ), Vector3d( 45.0, 22.0, 55.0 ), Vector3d( 0.0, 1.0, 0.0 ),
                           (-1.0 * imageWidth) / imageHeight, (1.0 * imageWidth) / imageHeight, -1.0, 1.0, 3.0,
@@ -494,7 +497,7 @@ void DefineScene3(Scene &scene, int imageWidth, int imageHeight)
 {
     scene.backgroundColor = Color(0.0f, 0.0f, 0.0f);
 
-    scene.amLight.I_a = Color(1.0f, 1.0f, 1.0f) * 0.35f;
+    scene.amLight.I_a = Color(1.0f, 1.0f, 1.0f) * 0.55f;
 
     scene.numMaterials = 30;
     PBRMaterial* emp_mats = new PBRMaterial[scene.numMaterials];

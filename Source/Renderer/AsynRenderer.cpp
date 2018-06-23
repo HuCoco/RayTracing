@@ -42,7 +42,7 @@ void AsynRenderer::Finalize()
 }
 
 
-void AsynRenderer::RenderScene(Scene* scene, Image* output, uint32_t numProcesser, uint32_t hasShadow, uint32_t reflectLevels)
+void AsynRenderer::RenderScene(Scene* scene, Image* output, uint32_t numProcesser, uint32_t hasShadow, uint32_t reflectLevels, uint32_t numSample)
 {
     if (mActivateThreads != 0)
     {
@@ -65,6 +65,7 @@ void AsynRenderer::RenderScene(Scene* scene, Image* output, uint32_t numProcesse
         mTaskList[i].output = output;
         mTaskList[i].processerId = i;
         mTaskList[i].callback = FinishTask;
+        mTaskList[i].numSample = numSample;
         mTaskList[i].reflectLevels = reflectLevels;
         mTaskList[i].hasShadow = hasShadow;
 
@@ -104,19 +105,17 @@ void AsynRenderer::DoTask(void* param)
         for (uint32_t x = 0; x < task->width; x++)
         {
             Color pixelColor = Color(0, 0, 0);
-            for (float i = 0.0f; i <= 1.0f; i += 0.1f)
+            for (uint32_t i = 0; i < task->numSample; i++)
             {
-                for (float j = 0.1f; j <= 1.0f; j += 0.1f)
-                {
-                    double pixelPosX = x + i;
-                    double pixelPosY = y + j;
-                    Ray ray = task->scene->camera.getRay(pixelPosX, pixelPosY);
-                    pixelColor += Raytrace::TraceRay(ray, *task->scene, task->reflectLevels, task->hasShadow);
-
-                    
-                }
+                float xx;
+                float yy;
+                Math::Hammersley(i, task->numSample, &xx, &yy);
+                double pixelPosX = x + xx;
+                double pixelPosY = y + yy;
+                Ray ray = task->scene->camera.getRay(pixelPosX, pixelPosY);
+                pixelColor += Raytrace::TraceRay(ray, *task->scene, task->reflectLevels, task->hasShadow);
             }
-            pixelColor /= 100.0f;
+            pixelColor /= (float)task->numSample;
             pixelColor.clamp();
             task->output->setPixel(x, y, pixelColor);
 

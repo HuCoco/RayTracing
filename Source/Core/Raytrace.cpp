@@ -191,25 +191,39 @@ Color Raytrace::TraceRay( const Ray &ray, const Scene &scene,
                 continue;
             }
         }
-        //result += computePhongLighting(L, N, V, reinterpret_cast<EMPMaterial*>(nearestHitRec.mat_ptr), scene.ptLight[i]);
-        //result += computeBlinnPhongLighting(L, N, V, *nearestHitRec.mat_ptr, scene.ptLight[i]);
-        float attenuation = 1.0 / (MaxLength * MaxLength);
-        result += computeBRDF(L, V, N, reinterpret_cast<PBRMaterial*>(nearestHitRec.mat_ptr), scene.ptLight[i], attenuation);
+
+        if (nearestHitRec.mat_ptr->type == EMP)
+        {
+            result += computePhongLighting(L, N, V, reinterpret_cast<EMPMaterial*>(nearestHitRec.mat_ptr), scene.ptLight[i]);
+            //result += computeBlinnPhongLighting(L, N, V, *nearestHitRec.mat_ptr, scene.ptLight[i]);
+        }
+        else if(nearestHitRec.mat_ptr->type == PBR)
+        {
+            float attenuation = 1.0 / (MaxLength * MaxLength);
+            result += computeBRDF(L, V, N, reinterpret_cast<PBRMaterial*>(nearestHitRec.mat_ptr), scene.ptLight[i], attenuation);
+        }
+
     }
     //***********************************************
-    //result /= scene.numPtLights;
-    //Color ambient = Color(0.03) * nearestHitRec.mat_ptr->k_d;
-    //result = ambient + result;
 
-    Color ambient = Color(0.03) * reinterpret_cast<PBRMaterial*>(nearestHitRec.mat_ptr)->albedo;
-    result += ambient;
-    result = result / (result + Color(1.0f));
-    result.gammaCorrect();
+
+
 // Add to result the global ambient lighting.
 
     //***********************************************
     //*********** WRITE YOUR CODE HERE **************
-    //result += scene.amLight.I_a * reinterpret_cast<EMPMaterial*>(nearestHitRec.mat_ptr)->k_a;
+    if (nearestHitRec.mat_ptr->type == EMP)
+    {
+        result /= scene.numPtLights;
+        result += scene.amLight.I_a * reinterpret_cast<EMPMaterial*>(nearestHitRec.mat_ptr)->k_a;
+    }
+    else if (nearestHitRec.mat_ptr->type == PBR)
+    {
+        Color ambient = Color(0.03) * reinterpret_cast<PBRMaterial*>(nearestHitRec.mat_ptr)->albedo;
+        result += ambient;
+        result = result / (result + Color(1.0f));
+        result.gammaCorrect();
+    }
     //***********************************************
 
 
@@ -223,21 +237,28 @@ Color Raytrace::TraceRay( const Ray &ray, const Scene &scene,
     if(reflectLevels > 0)
     {
         Vector3d dir = mirrorReflect(V, N);
-        Ray rRay(nearestHitRec.p,dir);
-       // result += reinterpret_cast<EMPMaterial*>(nearestHitRec.mat_ptr)->k_rg * TraceRay(rRay,scene,--reflectLevels,hasShadow);
-        float NoV = dot(N, V);
-        Color envBRDF = lut_tex.GetPixel(NoV, reinterpret_cast<PBRMaterial*>(nearestHitRec.mat_ptr)->roughness);
-        Vector3d F0 = Vector3d(reinterpret_cast<PBRMaterial*>(nearestHitRec.mat_ptr)->roughness);
-        Vector3d albedo = Vector3d(reinterpret_cast<PBRMaterial*>(nearestHitRec.mat_ptr)->albedo.r(), reinterpret_cast<PBRMaterial*>(nearestHitRec.mat_ptr)->albedo.g(), reinterpret_cast<PBRMaterial*>(nearestHitRec.mat_ptr)->albedo.b());
-        F0 = Lerp(F0, albedo, reinterpret_cast<PBRMaterial*>(nearestHitRec.mat_ptr)->metallic);
-        Color F = FresnelEquation(N, V, F0);
+        Ray rRay(nearestHitRec.p, dir);
+        if (nearestHitRec.mat_ptr->type == EMP)
+        {
+            result += reinterpret_cast<EMPMaterial*>(nearestHitRec.mat_ptr)->k_rg * TraceRay(rRay, scene, --reflectLevels, hasShadow);
+        }
+        else if (nearestHitRec.mat_ptr->type == PBR)
+        {
+            float NoV = dot(N, V);
+            Color envBRDF = lut_tex.GetPixel(NoV, reinterpret_cast<PBRMaterial*>(nearestHitRec.mat_ptr)->roughness);
+            Vector3d F0 = Vector3d(reinterpret_cast<PBRMaterial*>(nearestHitRec.mat_ptr)->roughness);
+            Vector3d albedo = Vector3d(reinterpret_cast<PBRMaterial*>(nearestHitRec.mat_ptr)->albedo.r(), reinterpret_cast<PBRMaterial*>(nearestHitRec.mat_ptr)->albedo.g(), reinterpret_cast<PBRMaterial*>(nearestHitRec.mat_ptr)->albedo.b());
+            F0 = Lerp(F0, albedo, reinterpret_cast<PBRMaterial*>(nearestHitRec.mat_ptr)->metallic);
+            Color F = FresnelEquation(N, V, F0);
 
-        Color kS = F;
-        Color kD = Color(1.0, 1.0, 1.0) - kS;
-        kD *= 1.0 - reinterpret_cast<PBRMaterial*>(nearestHitRec.mat_ptr)->metallic;
-        
+            Color kS = F;
+            Color kD = Color(1.0, 1.0, 1.0) - kS;
+            kD *= 1.0 - reinterpret_cast<PBRMaterial*>(nearestHitRec.mat_ptr)->metallic;
 
-        result += (kD * envBRDF.r() + envBRDF.g()) * TraceRay(rRay, scene, --reflectLevels, hasShadow);
+
+            result += (kD * envBRDF.r() + envBRDF.g()) * TraceRay(rRay, scene, --reflectLevels, hasShadow);
+        }
+
     }
     //***********************************************
 

@@ -177,6 +177,9 @@
     <ClInclude Include="Source\Core\BRDF_Function.h">
       <Filter>Core\RayTrace</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Renderer\ComputeShaderRenderer.h">
+      <Filter>Renderer</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\ImGui\imgui.cpp">
@@ -226,6 +229,9 @@
       <Filter>Platform\Thread</Filter>
     </ClCompile>
     <ClCompile Include="Source\Renderer\AsynRenderer.cpp">
+      <Filter>Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Renderer\ComputeShaderRenderer.cpp">
       <Filter>Renderer</Filter>
     </ClCompile>
   </ItemGroup>

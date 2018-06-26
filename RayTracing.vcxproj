@@ -175,6 +175,7 @@
     <ClInclude Include="Source\Platform\PlatformDefines.h" />
     <ClInclude Include="Source\Platform\Thread\Thread.h" />
     <ClInclude Include="Source\Renderer\AsynRenderer.h" />
+    <ClInclude Include="Source\Renderer\ComputeShaderRenderer.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Extension\gl3w\GL\gl3w.c" />
@@ -194,6 +195,7 @@
     <ClCompile Include="Source\ImGui\imgui_impl_glfw_gl3.cpp" />
     <ClCompile Include="Source\Platform\Thread\Thread.cpp" />
     <ClCompile Include="Source\Renderer\AsynRenderer.cpp" />
+    <ClCompile Include="Source\Renderer\ComputeShaderRenderer.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

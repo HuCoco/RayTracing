@@ -36,6 +36,7 @@
 
 #include <Renderer/AsynRenderer.h>
 #include <Core/Texture.h>
+#include "Renderer/ComputeShaderRenderer.h"
 using namespace std;
 
 
@@ -193,6 +194,8 @@ int main()
     
 
     lut_tex.Load("D:/RayTracing/Resource/Textures/pbdf_lut/ibl_brdf_lut.png");
+    ComputeShaderRenderer::GetInstance()->Initialize();
+    ComputeShaderRenderer::GetInstance()->CreateOutputImage(640, 480);
     //RenderImage("C:/Users/Huke/Desktop/ImageTest/out2.tga", scene2, reflectLevels2, hasShadow2);
     while (!glfwWindowShouldClose(window))
     {   
@@ -219,8 +222,9 @@ int main()
 
         {
             ImGui::Begin("Option");
-            
-            ImTextureID my_tex_id = reinterpret_cast<ImTextureID>(gImage.GetGLTextureHandle());//io.Fonts->TexID;
+            ComputeShaderRenderer::GetInstance()->Render();
+            glBindTexture(GL_TEXTURE_2D, ComputeShaderRenderer::GetInstance()->GetOutputImageHandle());
+            ImTextureID my_tex_id = reinterpret_cast<ImTextureID>(ComputeShaderRenderer::GetInstance()->GetOutputImageHandle());// (gImage.GetGLTextureHandle());//io.Fonts->TexID;
             float my_tex_w = (float)gImage.GetWidth();//(float)io.Fonts->TexWidth;
             float my_tex_h = (float)gImage.GetHeight();//(float)io.Fonts->TexHeight;
             ImVec2 pos = ImGui::GetCursorScreenPos();
@@ -270,6 +274,7 @@ int main()
     }
 
     AsynRenderer::GetInstance()->Finalize();
+    ComputeShaderRenderer::GetInstance()->Finalize();
     // Cleanup
     ImGui_ImplGlfwGL3_Shutdown();
     ImGui::DestroyContext();

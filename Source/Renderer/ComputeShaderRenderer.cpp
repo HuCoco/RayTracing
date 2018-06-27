@@ -1,6 +1,7 @@
 #include "ComputeShaderRenderer.h"
 #include <fstream>
 #include <sstream>
+#include <Core/Sphere.h>
 ComputeShaderRenderer::ComputeShaderRenderer()
 {
 
@@ -84,4 +85,43 @@ void ComputeShaderRenderer::Render()
     glDispatchComputeIndirect(0);
     glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
     glFinish();
+}
+
+void ComputeShaderRenderer::PassShaderData()
+{
+
+}
+
+void ComputeShaderRenderer::GenerateShaderData(const Scene& scene)
+{
+    mDirectionLight.color = scene.amLight.I_a;
+
+    mNumActivePointLight = scene.numPtLights < 32 ? scene.numPtLights : 32;
+    for (uint32_t i = 0; i < mNumActivePointLight; ++i)
+    {
+        mPointLightList[i].position.x = (float)scene.ptLight[i].position.x();
+        mPointLightList[i].position.y = (float)scene.ptLight[i].position.y();
+        mPointLightList[i].position.z = (float)scene.ptLight[i].position.z();
+        mPointLightList[i].color = scene.ptLight[i].I_source;
+    }
+
+    mNumActiveMaterials = scene.numMaterials < 32 ? scene.numMaterials : 32;
+    for (uint32_t i = 0; i < mNumActiveMaterials; ++i)
+    {
+        mMaterialList[i].albedo = reinterpret_cast<PBRMaterial*>(scene.numMaterials)[i].albedo;
+        mMaterialList[i].metallic = reinterpret_cast<PBRMaterial*>(scene.numMaterials)[i].metallic;
+        mMaterialList[i].roughness = reinterpret_cast<PBRMaterial*>(scene.numMaterials)[i].roughness;
+    }
+
+    mNumActiveSpheres = scene.numSurfaces < 32 ? scene.numSurfaces : 32;
+    for (uint32_t i = 0; i < mNumActiveSpheres; ++i)
+    {
+        mSphereList[i].center.x = reinterpret_cast<::Sphere*>(scene.surfacep[i])->center.x();
+        mSphereList[i].center.y = reinterpret_cast<::Sphere*>(scene.surfacep[i])->center.y();
+        mSphereList[i].center.z = reinterpret_cast<::Sphere*>(scene.surfacep[i])->center.z();
+        mSphereList[i].radius = reinterpret_cast<::Sphere*>(scene.surfacep[i])->radius;
+        mSphereList[i].mat = i;
+    }
+
+
 }

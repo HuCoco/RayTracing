@@ -1,14 +1,19 @@
 #version 430
 
 //#include "Geometry.h"
+
+layout (local_size_x = 16, local_size_y = 16) in; 
+
+layout (rgba32f, binding = 0) uniform image2D output_image; 
+
 // Geometry Function
 
-// struct PBRMaterial
-// {
-// 	vec3 albedo;
-// 	float metallic;
-//     float roughness;
-// };
+struct PBRMaterial
+{
+	vec3 albedo;
+	float metallic;
+    float roughness;
+};
 
 // struct SurfaceHitRecord
 // {
@@ -25,12 +30,38 @@
 // 	vec3 direction;
 // };
 
-// struct Sphere
-// {
-// 	vec3 center;
-// 	float radius;
-// 	int mat;
-// };
+struct Sphere
+{
+	vec3 center;
+	float radius;
+	int mat;
+};
+
+struct PointLight
+{
+	vec3 position;
+	vec3 color;
+};
+
+struct DirectionLight
+{
+	vec3 color;
+};
+
+uniform PointLight g_PointLightList[32]
+uniform uint g_NumActivePointLights;
+
+uniform DirectionLight g_DirectionLight;
+
+uniform PBRMaterial g_MaterialList[32]
+uniform uint g_NumActiveMaterials;
+
+uniform Sphere g_SphereList[32];
+uniform uint g_NumActiveSpheres;
+
+//uniform uint NumSample;
+//uniform uint ReflectLevels;
+//uniform bool HasShadow;
 
 // bool SphereHit(Ray ray, float tmin, float tmax, bool onlyCheckShadow)
 // {
@@ -62,19 +93,9 @@
 // }
 
 
-layout (local_size_x = 16, local_size_y = 16) in; 
 
-layout (rgba32f, binding = 0) uniform image2D output_image; 
 
-// uniform PBRMaterial g_MaterialList[32]
-// uniform uint g_NumActiveMaterials;
 
-// uniform Sphere g_SphereList[32];
-// uniform uint g_NumActiveSpheres;
-
-// uniform uint NumSample;
-// uniform uint ReflectLevels;
-// uniform bool HasShadow;
 
 // float RadicalInverse(int bits)
 // {

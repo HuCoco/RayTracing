@@ -13,6 +13,7 @@ public:
     void CreateOutputImage(uint32_t width, uint32_t height);
     void Finalize();
     void Render();
+    void PrepareShaderData();
     void PassShaderData();
     void GenerateShaderData(const Scene& scene);
     GLuint GetOutputImageHandle() { return mOutputImage; }
@@ -22,6 +23,13 @@ private:
     GLuint mOutputImage;
     uint32_t mTargetImageWidth;
     uint32_t mTargetImageHeight;
+
+    //Direction Light 
+    GLuint DirectionLightHandle;
+    GLuint PointLightsHandle;
+    GLuint MaterialsHandle;
+    GLuint SpheresHandle;
+    GLuint CameraHandle;
 
 private:
     struct Material
@@ -59,4 +67,16 @@ private:
     };
 
     DirectionLight mDirectionLight;
+
+    struct Camera
+    {
+        Vec3f COP;
+        Vec3f ImageOrigin;
+        Vec3f ImageU;
+        Vec3f ImageV;
+        int ImageWidth;
+        int ImageHeight;
+    };
+
+    Camera mCamera;
 };

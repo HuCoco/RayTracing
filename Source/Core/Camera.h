@@ -80,7 +80,7 @@ public:
 	}
 
 
-private:
+//private:
 
 	Vector3d mCOP; // The center of projection or the camera viewpoint.
 	Vector3d mImageOrigin;

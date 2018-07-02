@@ -171,7 +171,7 @@ int main()
     glfwSetErrorCallback(glfw_error_callback);
     if (!glfwInit())
         return 1;
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
@@ -196,6 +196,8 @@ int main()
     lut_tex.Load("D:/RayTracing/Resource/Textures/pbdf_lut/ibl_brdf_lut.png");
     ComputeShaderRenderer::GetInstance()->Initialize();
     ComputeShaderRenderer::GetInstance()->CreateOutputImage(640, 480);
+    ComputeShaderRenderer::GetInstance()->GenerateShaderData(scene3);
+    ComputeShaderRenderer::GetInstance()->PrepareShaderData();
     //RenderImage("C:/Users/Huke/Desktop/ImageTest/out2.tga", scene2, reflectLevels2, hasShadow2);
     while (!glfwWindowShouldClose(window))
     {   
@@ -222,6 +224,7 @@ int main()
 
         {
             ImGui::Begin("Option");
+            ComputeShaderRenderer::GetInstance()->PassShaderData();
             ComputeShaderRenderer::GetInstance()->Render();
             glBindTexture(GL_TEXTURE_2D, ComputeShaderRenderer::GetInstance()->GetOutputImageHandle());
             ImTextureID my_tex_id = reinterpret_cast<ImTextureID>(ComputeShaderRenderer::GetInstance()->GetOutputImageHandle());// (gImage.GetGLTextureHandle());//io.Fonts->TexID;

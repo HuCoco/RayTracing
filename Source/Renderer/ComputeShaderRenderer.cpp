@@ -2,6 +2,11 @@
 #include <fstream>
 #include <sstream>
 #include <Core/Sphere.h>
+
+#define MAX_NUM_POINT_LIGHTS 32
+#define MAX_NUM_MATERIALS 32
+#define MAX_NUM_SPHERES 32
+
 ComputeShaderRenderer::ComputeShaderRenderer()
 {
 
@@ -49,6 +54,7 @@ void ComputeShaderRenderer::Initialize()
         printf("%s\n", infoLog);
     }
     file.close();
+    
 }
 
 void ComputeShaderRenderer::CreateOutputImage(uint32_t width, uint32_t height)
@@ -87,9 +93,40 @@ void ComputeShaderRenderer::Render()
     glFinish();
 }
 
+void ComputeShaderRenderer::PrepareShaderData()
+{
+    glGenBuffers(1, &DirectionLightHandle);
+    glBindBuffer(GL_UNIFORM_BUFFER, DirectionLightHandle);
+    glBufferData(GL_UNIFORM_BUFFER, sizeof(DirectionLight), &mDirectionLight, GL_STATIC_DRAW);
+    glBindBuffer(GL_UNIFORM_BUFFER, 0);
+
+    glGenBuffers(1, &PointLightsHandle);
+    glBindBuffer(GL_UNIFORM_BUFFER, PointLightsHandle);
+    glBufferData(GL_UNIFORM_BUFFER, sizeof(PointLight) * MAX_NUM_POINT_LIGHTS, mPointLightList, GL_STATIC_DRAW);
+    glBindBuffer(GL_UNIFORM_BUFFER, 0);
+
+    glGenBuffers(1, &MaterialsHandle);
+    glBindBuffer(GL_UNIFORM_BUFFER, MaterialsHandle);
+    glBufferData(GL_UNIFORM_BUFFER, sizeof(Material) * MAX_NUM_POINT_LIGHTS, mMaterialList, GL_STATIC_DRAW);
+    glBindBuffer(GL_UNIFORM_BUFFER, 0);
+
+    glGenBuffers(1, &SpheresHandle);
+    glBindBuffer(GL_UNIFORM_BUFFER, SpheresHandle);
+    glBufferData(GL_UNIFORM_BUFFER, sizeof(Sphere) * MAX_NUM_SPHERES, mSphereList, GL_STATIC_DRAW);
+    glBindBuffer(GL_UNIFORM_BUFFER, 0);
+
+    glGenBuffers(1, &CameraHandle);
+    glBindBuffer(GL_UNIFORM_BUFFER, CameraHandle);
+    glBufferData(GL_UNIFORM_BUFFER, sizeof(Camera), &mCamera, GL_STATIC_DRAW);
+    glBindBuffer(GL_UNIFORM_BUFFER, 0);
+}
+
 void ComputeShaderRenderer::PassShaderData()
 {
-
+    glBindBufferBase(GL_UNIFORM_BUFFER, 0, DirectionLightHandle);
+    glBindBufferBase(GL_UNIFORM_BUFFER, 1, PointLightsHandle);
+    glBindBufferBase(GL_UNIFORM_BUFFER, 2, MaterialsHandle);
+    glBindBufferBase(GL_UNIFORM_BUFFER, 3, SpheresHandle);
 }
 
 void ComputeShaderRenderer::GenerateShaderData(const Scene& scene)
@@ -108,9 +145,9 @@ void ComputeShaderRenderer::GenerateShaderData(const Scene& scene)
     mNumActiveMaterials = scene.numMaterials < 32 ? scene.numMaterials : 32;
     for (uint32_t i = 0; i < mNumActiveMaterials; ++i)
     {
-        mMaterialList[i].albedo = reinterpret_cast<PBRMaterial*>(scene.numMaterials)[i].albedo;
-        mMaterialList[i].metallic = reinterpret_cast<PBRMaterial*>(scene.numMaterials)[i].metallic;
-        mMaterialList[i].roughness = reinterpret_cast<PBRMaterial*>(scene.numMaterials)[i].roughness;
+        mMaterialList[i].albedo = reinterpret_cast<PBRMaterial*>(scene.material)[i].albedo;
+        mMaterialList[i].metallic = reinterpret_cast<PBRMaterial*>(scene.material)[i].metallic;
+        mMaterialList[i].roughness = reinterpret_cast<PBRMaterial*>(scene.material)[i].roughness;
     }
 
     mNumActiveSpheres = scene.numSurfaces < 32 ? scene.numSurfaces : 32;
@@ -124,4 +161,22 @@ void ComputeShaderRenderer::GenerateShaderData(const Scene& scene)
     }
 
 
+    mCamera.COP.x = scene.camera.mCOP.x();
+    mCamera.COP.y = scene.camera.mCOP.y();
+    mCamera.COP.z = scene.camera.mCOP.z();
+
+    mCamera.ImageOrigin.x = scene.camera.mImageOrigin.x();
+    mCamera.ImageOrigin.y = scene.camera.mImageOrigin.y();
+    mCamera.ImageOrigin.z = scene.camera.mImageOrigin.z();
+
+    mCamera.ImageU.x = scene.camera.mImageU.x();
+    mCamera.ImageU.y = scene.camera.mImageU.y();
+    mCamera.ImageU.z = scene.camera.mImageU.z();
+
+    mCamera.ImageV.x = scene.camera.mImageV.x();
+    mCamera.ImageV.y = scene.camera.mImageV.y();
+    mCamera.ImageV.z = scene.camera.mImageV.z();
+
+    mCamera.ImageWidth = scene.camera.getImageWidth();
+    mCamera.ImageHeight = scene.camera.getImageHeight();
 }

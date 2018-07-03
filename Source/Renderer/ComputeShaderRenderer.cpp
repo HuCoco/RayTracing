@@ -123,22 +123,54 @@ void ComputeShaderRenderer::PrepareShaderData()
 
 void ComputeShaderRenderer::PassShaderData()
 {
+    glBindBuffer(GL_UNIFORM_BUFFER, PointLightsHandle);
+    glBufferData(GL_UNIFORM_BUFFER, sizeof(PointLight) * MAX_NUM_POINT_LIGHTS, mPointLightList, GL_STATIC_DRAW);
+    glBindBuffer(GL_UNIFORM_BUFFER, 0);
+
+
     glBindBufferBase(GL_UNIFORM_BUFFER, 0, DirectionLightHandle);
     glBindBufferBase(GL_UNIFORM_BUFFER, 1, PointLightsHandle);
     glBindBufferBase(GL_UNIFORM_BUFFER, 2, MaterialsHandle);
     glBindBufferBase(GL_UNIFORM_BUFFER, 3, SpheresHandle);
+    glBindBufferBase(GL_UNIFORM_BUFFER, 4, CameraHandle);
+
+    auto a = glGetUniformLocation(mProgram, "NumActiveSpheres");
+    glUniform1ui(glGetUniformLocation(mProgram, "NumActiveLights"), mNumActivePointLight);
+    //glUniform1i(glGetUniformLocation(mProgram, "NumActiveMaterials"), mNumActiveMaterials);
+    glUniform1ui(glGetUniformLocation(mProgram, "NumActiveSpheres"), mNumActiveSpheres);
+    glUniform1ui(glGetUniformLocation(mProgram, "NumSample"), 100);
+    glUniform1ui(glGetUniformLocation(mProgram, "ReflectLevels"), 1);
+    glUniform1i(glGetUniformLocation(mProgram, "HasShadow"), 0);
 }
 
 void ComputeShaderRenderer::GenerateShaderData(const Scene& scene)
 {
     mDirectionLight.color = scene.amLight.I_a;
+    static float a = 0.01f;
+    static float step = 0.1;
+    static float range = 10;
+    a += step;
 
+    
     mNumActivePointLight = scene.numPtLights < 32 ? scene.numPtLights : 32;
     for (uint32_t i = 0; i < mNumActivePointLight; ++i)
     {
-        mPointLightList[i].position.x = (float)scene.ptLight[i].position.x();
-        mPointLightList[i].position.y = (float)scene.ptLight[i].position.y();
-        mPointLightList[i].position.z = (float)scene.ptLight[i].position.z();
+        float xx;
+        float yy;
+        if (i % 2 == 0)
+        {
+            xx = sin(a)*range;
+            yy = cos(a)*range;
+            
+        }
+        else
+        {
+            xx = -sin(a)*range;
+            yy = -cos(a)*range;
+        }
+        mPointLightList[i].position.x = (float)scene.ptLight[i].position.x() + xx;
+        mPointLightList[i].position.y = (float)scene.ptLight[i].position.y() + yy;
+        mPointLightList[i].position.z = (float)scene.ptLight[i].position.z() + yy;
         mPointLightList[i].color = scene.ptLight[i].I_source;
     }
 

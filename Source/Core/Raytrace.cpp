@@ -219,10 +219,10 @@ Color Raytrace::TraceRay( const Ray &ray, const Scene &scene,
     }
     else if (nearestHitRec.mat_ptr->type == PBR)
     {
-        Color ambient = Color(0.03) * reinterpret_cast<PBRMaterial*>(nearestHitRec.mat_ptr)->albedo;
-        result += ambient;
-        result = result / (result + Color(1.0f));
-        result.gammaCorrect();
+        //Color ambient = Color(0.03) * reinterpret_cast<PBRMaterial*>(nearestHitRec.mat_ptr)->albedo;
+        //result += ambient;
+        //result = result / (result + Color(1.0f));
+        //result.gammaCorrect();
     }
     //***********************************************
 

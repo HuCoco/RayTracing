@@ -56,8 +56,8 @@ static const bool hasShadow2 = true;
 
 static const uint32_t imageWidth3 = 640;
 static const uint32_t imageHeight3 = 480;
-static const uint32_t reflectLevels3 = 1;  // 0 -- object does not reflect scene.
-static const uint32_t numSample3 = 100;
+static const uint32_t reflectLevels3 = 0;  // 0 -- object does not reflect scene.
+static const uint32_t numSample3 = 200;
 static const bool hasShadow3 = false;
 
 
@@ -224,10 +224,12 @@ int main()
 
         {
             ImGui::Begin("Option");
+            ComputeShaderRenderer::GetInstance()->GenerateShaderData(scene3);
             ComputeShaderRenderer::GetInstance()->PassShaderData();
             ComputeShaderRenderer::GetInstance()->Render();
             glBindTexture(GL_TEXTURE_2D, ComputeShaderRenderer::GetInstance()->GetOutputImageHandle());
             ImTextureID my_tex_id = reinterpret_cast<ImTextureID>(ComputeShaderRenderer::GetInstance()->GetOutputImageHandle());// (gImage.GetGLTextureHandle());//io.Fonts->TexID;
+            //ImTextureID my_tex_id = reinterpret_cast<ImTextureID>(gImage.GetGLTextureHandle());
             float my_tex_w = (float)gImage.GetWidth();//(float)io.Fonts->TexWidth;
             float my_tex_h = (float)gImage.GetHeight();//(float)io.Fonts->TexHeight;
             ImVec2 pos = ImGui::GetCursorScreenPos();

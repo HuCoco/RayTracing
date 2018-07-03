@@ -37,6 +37,7 @@ private:
         Color albedo;
         float metallic;
         float roughness;
+        float _pad[3];
     };
 
     Material mMaterialList[32];
@@ -47,6 +48,7 @@ private:
         Vec3f center;
         float radius;
         uint32_t mat;
+        float _pad[3];
     };
 
     Sphere mSphereList[32];
@@ -55,7 +57,9 @@ private:
     struct PointLight
     {
         Vec3f position;
+        float _pad_1;
         Color color;
+        float _pad_2;
     };
 
     PointLight mPointLightList[32];
@@ -71,8 +75,11 @@ private:
     struct Camera
     {
         Vec3f COP;
+        float _pad_1;
         Vec3f ImageOrigin;
+        float _pad_2;
         Vec3f ImageU;
+        float _pad_3;
         Vec3f ImageV;
         int ImageWidth;
         int ImageHeight;

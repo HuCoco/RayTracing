@@ -71,6 +71,7 @@ layout(std140, binding = 1) uniform PointLight
 {
 	PointLightData PointLights[MAX_NUM_POINT_LIGHTS];
 };
+uniform uint NumActiveLights;
 
 layout(std140, binding = 2) uniform Material
 {
@@ -114,6 +115,77 @@ vec2 Hammersley(uint i, uint N)
     return vec2(float(i) / float(N),RadicalInverse(i));
 }
 
+vec3 FresnelEquation(vec3 N, vec3 V, vec3 F)
+{
+    float NoV = dot(N, V);
+    vec3 res = F + (vec3(1.0f) - F) * pow(1.0f - NoV, 5);
+    return res;
+}
+
+float GeometrychlickGGX(float NoV, float k)
+{
+    float nom = NoV;
+    float denom = NoV * (1.0 - k) + k;
+
+    return nom / denom;
+}
+
+float GeometryFunction(vec3 N, vec3 V, vec3 L, float Roughness)
+{
+    float k = pow(Roughness + 1, 2) / 8.0f;
+    float NoV = max(dot(N, V), 0.0);
+    float NoL = max(dot(N, L), 0.0);
+    float ggx1 = GeometrychlickGGX(NoV, k);
+    float ggx2 = GeometrychlickGGX(NoL, k);
+
+    return ggx1 * ggx2;
+}
+
+float NormalDistributionFunction(float NoH, float Roughness)
+{
+    float a = Roughness * Roughness;
+    float a2 = a * a;
+    float NdotH = max(NoH, 0.0f);
+    float NdotH2 = NdotH * NdotH;
+
+    float nom = a2;
+    float denom = (NdotH2 * (a2 - 1.0) + 1.0);
+    denom = 3.141592 * denom * denom;
+
+    return nom / denom;
+}
+
+vec4 computeBRDF(vec3 L, vec3 V, vec3 N, MaterialData mat, PointLightData plight, float attenuation)
+{
+	float NoV = dot(N, V);
+	float NoL = dot(N, L);
+	vec3 H = V + L;
+	H = normalize(H);
+	float NoH = dot(N, H);
+
+	vec3 F0 = vec3(mat.roughness);
+	vec3 albedo = mat.albedo;
+	F0 = mix(F0, albedo, vec3(mat.metallic));
+
+	vec3 F = FresnelEquation(N, V, F0);
+
+	float NDF = NormalDistributionFunction(NoH, mat.roughness);
+    float G = GeometryFunction(N, V, L, mat.roughness);
+
+    vec3 nominator = NDF * G * F;
+   	float denominator = 4.0 * max(NoV,0.0) * max(NoL, 0.0) + 0.0001;
+   	vec3 specular = nominator / denominator;
+
+   	vec3 kS = F;
+   	vec3 kD = vec3(1.0) - kS;
+   	kD =  kD * vec3(1.0 - mat.metallic);
+   	float NdotL = max(NoL, 0.0);
+
+   	vec3 res = (kD * mat.albedo / 3.1415926 + specular) *(attenuation * plight.color) * NdotL;
+   	return vec4(res,1.0);
+}
+
+
 bool SphereHit(SphereData sphere, Ray ray, float tmin, float tmax, bool onlyCheckShadow)
 {
 	vec3 Rd = ray.direction;
@@ -148,11 +220,72 @@ const float DEFAULT_TMIN = 1.175494351e-38F;
 
 vec4 RayTrace(Ray ray, uint reflectLevels, bool hasShadow)
 {
-	vec4 color;
+	vec4 color = vec4(0.0);
+	bool hasHitSomething = false;
+	ray.direction = normalize(ray.direction);
+	float nearest_t = DEFAULT_TMAX;
 	for(int i = 0 ; i < NumActiveSpheres ; i++)
 	{
 		bool hasHit = SphereHit(Spheres[i],ray,DEFAULT_TMIN,DEFAULT_TMAX,false);
+		if(hasHit && tempHitRec.t < nearest_t)
+		{
+			hasHitSomething = true;
+			nearest_t = tempHitRec.t;
+			nearestHitRec = tempHitRec;
+		}
+
 	}
+
+	if(!hasHitSomething)
+	{
+		return color;
+	}
+
+	vec3 N = normalize(nearestHitRec.n);
+	vec3 V = -ray.direction;
+
+	bool shadow = true;
+	for(int i = 0; i < NumActiveLights; i++)
+	{
+		vec3 Lin = PointLights[i].position - nearestHitRec.p;
+		float MaxLength = length(Lin);
+		float invLen = 1 / MaxLength;
+		vec3 L = Lin * invLen;
+
+		Ray newRay;
+		newRay.origin = nearestHitRec.p;
+		newRay.direction = L;
+
+
+        if(HasShadow)
+        {
+			for(int j = 0; j < NumActiveSpheres; j++)
+			{
+				bool hasHit = SphereHit(Spheres[j],newRay,DEFAULT_TMIN,MaxLength,true);
+				if(hasHit)
+				{
+					shadow = false;
+					break;
+				}
+			}
+
+			if(shadow == false)
+			{
+				continue;
+			}
+		}
+
+		float attenuation = 1.0 /  (MaxLength * MaxLength);
+		color += computeBRDF(L,V,N,Materials[nearestHitRec.mat],PointLights[i],attenuation);
+	}
+
+	vec4 ambient = vec4(0.03f) *  vec4(Materials[nearestHitRec.mat].albedo,1.0);
+	color += ambient;
+	color = color / (color + vec4(1.0));
+
+	color = pow(color, vec4(1 / 2.2));
+
+	color.a = 1;
 	return color;
 }
 
@@ -169,6 +302,7 @@ void main(void)
 	color /= NumSample;
 	clamp(color,0,1);
 	barrier();
+	color.a = 1;
 	imageStore(output_image, pos.xy, color); 
 	// vec3 c = DirectionLights.color;
 	// ivec2 pos = ivec2(gl_GlobalInvocationID.xy);

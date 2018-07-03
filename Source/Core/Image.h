@@ -41,7 +41,7 @@ public:
 	Image &setPixel( int x, int y, Color c ) 
 	{ 
 		assert( x >= 0 && x < mWidth && y >= 0 && y < mHeight ); 
-		mData[ (mHeight - y - 1) * mWidth + x ] = c;
+		mData[ ( y) * mWidth + x ] = c;
 		return (*this); 
 	}
 

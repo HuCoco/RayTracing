@@ -25,7 +25,7 @@ ThreadWindows::~ThreadWindows()
 void ThreadWindows::Initialize(const ThreadInitializeDescription& description)
 {
     m_ThreadDescription = description;
-    m_Handle = ::CreateThread(nullptr, m_ThreadDescription.StackSize, ThreadWindows::ThreadEntryFuncWapper, this, 0, (LPDWORD)(&m_ThreadID));
+    m_Handle = ::CreateThread(nullptr, m_ThreadDescription.StackSize, (LPTHREAD_START_ROUTINE)ThreadWindows::ThreadEntryFuncWapper, this, 0, (LPDWORD)(&m_ThreadID));
     assert(m_Handle && "Failed to create thread.");
 }
 

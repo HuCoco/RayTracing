@@ -47,7 +47,7 @@ static inline void SIMD4F_USTORE4(SIMD4F& val, float *arr)
     std::memcpy(arr, &val, sizeof(float) * 4);
 }
 
-static inline void SIMD4F_USTORE3(SIMD4F& val, float *arr)
+static inline void SIMD4F_USTORE3(const SIMD4F& val, float *arr)
 {
     std::memcpy(arr, &val, sizeof(float) * 3);
 }

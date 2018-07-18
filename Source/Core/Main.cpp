@@ -66,53 +66,59 @@ Texture lut_tex;
 ///////////////////////////////////////////////////////////////////////////
 // Raytrace the whole image of the scene and write it to a file.
 ///////////////////////////////////////////////////////////////////////////
-
-void RenderImage( const char *imageFilename, const Scene &scene, int reflectLevels, bool hasShadow )
-{
-
-
-	int imgWidth = scene.camera.getImageWidth();
-	int imgHeight = scene.camera.getImageHeight();
-
-	//Image image( imgWidth, imgHeight );	// To store the result of ray tracing.
-    gImage.setImage(imgWidth, imgHeight);
-	double startTime = Util::GetCurrRealTime();
-	double startCPUTime = Util::GetCurrCPUTime();
-
-	// Generate image.
-	for ( int y = 0; y < imgHeight; y++ )
-	{
-		double pixelPosY = y + 0.5;
-
-		for ( int x = 0; x < imgWidth; x++ )
-		{
-			double pixelPosX = x + 0.5;
-			Ray ray = scene.camera.getRay( pixelPosX, pixelPosY );
-			Color pixelColor = Raytrace::TraceRay( ray, scene, reflectLevels, hasShadow );
-			pixelColor.clamp();
-            gImage.setPixel( x, y, pixelColor );
-		}
-		// printf( "%d ", y );
-	}
-	double stopCPUTime = Util::GetCurrCPUTime();
-	double stopTime = Util::GetCurrRealTime();
-	printf( "CPU time taken = %.1f sec\n", stopCPUTime - startCPUTime );
-	printf( "Real time taken = %.1f sec\n", stopTime - startTime ); 
-
-	// Write image to file.
-	//image.writeToFile( imageFilename );
-}
+//template<class T>
+//void RenderImage( const char *imageFilename, const Scene &scene, int reflectLevels, bool hasShadow )
+//{
+//	int imgWidth = scene.camera.getImageWidth();
+//	int imgHeight = scene.camera.getImageHeight();
+//
+//	//Image image( imgWidth, imgHeight );	// To store the result of ray tracing.
+//    gImage.setImage(imgWidth, imgHeight);
+//	double startTime = Util::GetCurrRealTime();
+//	double startCPUTime = Util::GetCurrCPUTime();
+//
+//	// Generate image.
+//	for ( int y = 0; y < imgHeight; y++ )
+//	{
+//		double pixelPosY = y + 0.5;
+//
+//		for ( int x = 0; x < imgWidth; x++ )
+//		{
+//			double pixelPosX = x + 0.5;
+//			Ray ray = scene.camera.getRay( pixelPosX, pixelPosY );
+//			Color pixelColor = T::TraceRay( ray, scene, reflectLevels, hasShadow );
+//			pixelColor.clamp();
+//            gImage.setPixel( x, y, pixelColor );
+//		}
+//		// printf( "%d ", y );
+//	}
+//	double stopCPUTime = Util::GetCurrCPUTime();
+//	double stopTime = Util::GetCurrRealTime();
+//	printf( "CPU time taken = %.1f sec\n", stopCPUTime - startCPUTime );
+//	printf( "Real time taken = %.1f sec\n", stopTime - startTime ); 
+//
+//	// Write image to file.
+//	//image.writeToFile( imageFilename );
+//}
 
 
 
 
 // Forward declarations. These functions are defined later in the file.
+namespace PBR
+{
+    void DefineScene1(Scene &scene, int imageWidth, int imageHeight);
+    void DefineScene2(Scene &scene, int imageWidth, int imageHeight);
+    void DefineScene3(Scene &scene, int imageWidth, int imageHeight);
+}
 
-void DefineScene1( Scene &scene, int imageWidth, int imageHeight );
-void DefineScene2( Scene &scene, int imageWidth, int imageHeight );
-void DefineScene3( Scene &scene, int imageWidth, int imageHeight);
 
-
+namespace Phong
+{
+    void DefineScene1(Scene &scene, int imageWidth, int imageHeight);
+    void DefineScene2(Scene &scene, int imageWidth, int imageHeight);
+    void DefineScene3(Scene &scene, int imageWidth, int imageHeight);
+}
 
 
 
@@ -131,15 +137,15 @@ static void glfw_error_callback(int error, const char* description)
 Texture tex;
 int main()
 {
-    AsynRenderer::GetInstance()->Initialize();
-
+    PBR::AsynRenderer::GetInstance()->Initialize();
+    Phong::AsynRenderer::GetInstance()->Initialize();
 //	atexit( WaitForEnterKeyBeforeExit );
 //
 //
 //
 // Define Scene 1.
 
-	Scene scene1;
+	Phong::Scene scene1;
 	DefineScene1( scene1, imageWidth1, imageHeight1 );
 
 // Render Scene 1.
@@ -152,10 +158,10 @@ int main()
 //
 // Define Scene 2.
 
-	Scene scene2;
+	Phong::Scene scene2;
 	DefineScene2( scene2, imageWidth2, imageHeight2 );
 
-    Scene scene3;
+    PBR::Scene scene3;
     DefineScene3(scene3, imageWidth3, imageHeight3);
 
 // Render Scene 2.
@@ -194,10 +200,10 @@ int main()
     
 
     lut_tex.Load("D:/RayTracing/Resource/Textures/pbdf_lut/ibl_brdf_lut.png");
-    ComputeShaderRenderer::GetInstance()->Initialize();
-    ComputeShaderRenderer::GetInstance()->CreateOutputImage(640, 480);
-    ComputeShaderRenderer::GetInstance()->GenerateShaderData(scene3);
-    ComputeShaderRenderer::GetInstance()->PrepareShaderData();
+    PBR::ComputeShaderRenderer::GetInstance()->Initialize();
+    PBR::ComputeShaderRenderer::GetInstance()->CreateOutputImage(640, 480);
+    PBR::ComputeShaderRenderer::GetInstance()->GenerateShaderData(scene3);
+    PBR::ComputeShaderRenderer::GetInstance()->PrepareShaderData();
     //RenderImage("C:/Users/Huke/Desktop/ImageTest/out2.tga", scene2, reflectLevels2, hasShadow2);
     while (!glfwWindowShouldClose(window))
     {   
@@ -209,11 +215,11 @@ int main()
             ImGui::Begin("Option");
             if (ImGui::Button("Start"))
             {
-                AsynRenderer::GetInstance()->RenderScene(&scene3, &gImage, 8, hasShadow3, reflectLevels3, numSample3);
+                //AsynRenderer::GetInstance()->RenderScene(&scene3, &gImage, 8, hasShadow3, reflectLevels3, numSample3);
             }
             if (ImGui::Button("Start2"))
             {
-                AsynRenderer::GetInstance()->RenderScene(&scene2, &gImage, 8, hasShadow2, reflectLevels2, numSample2);
+               // AsynRenderer::GetInstance()->RenderScene(&scene2, &gImage, 8, hasShadow2, reflectLevels2, numSample2);
             }
             if (ImGui::Button("Gamma"))
             {
@@ -224,11 +230,11 @@ int main()
 
         {
             ImGui::Begin("Option");
-            ComputeShaderRenderer::GetInstance()->GenerateShaderData(scene3);
-            ComputeShaderRenderer::GetInstance()->PassShaderData();
-            ComputeShaderRenderer::GetInstance()->Render();
-            glBindTexture(GL_TEXTURE_2D, ComputeShaderRenderer::GetInstance()->GetOutputImageHandle());
-            ImTextureID my_tex_id = reinterpret_cast<ImTextureID>(ComputeShaderRenderer::GetInstance()->GetOutputImageHandle());// (gImage.GetGLTextureHandle());//io.Fonts->TexID;
+            PBR::ComputeShaderRenderer::GetInstance()->GenerateShaderData(scene3);
+            PBR::ComputeShaderRenderer::GetInstance()->PassShaderData();
+            PBR::ComputeShaderRenderer::GetInstance()->Render();
+            glBindTexture(GL_TEXTURE_2D, PBR::ComputeShaderRenderer::GetInstance()->GetOutputImageHandle());
+            ImTextureID my_tex_id = reinterpret_cast<ImTextureID>(PBR::ComputeShaderRenderer::GetInstance()->GetOutputImageHandle());// (gImage.GetGLTextureHandle());//io.Fonts->TexID;
             //ImTextureID my_tex_id = reinterpret_cast<ImTextureID>(gImage.GetGLTextureHandle());
             float my_tex_w = (float)gImage.GetWidth();//(float)io.Fonts->TexWidth;
             float my_tex_h = (float)gImage.GetHeight();//(float)io.Fonts->TexHeight;
@@ -271,15 +277,15 @@ int main()
         ImGui::Render();
         ImGui_ImplGlfwGL3_RenderDrawData(ImGui::GetDrawData());
         glfwSwapBuffers(window);
-        if (AsynRenderer::GetInstance()->IsFinishAllTask())
+        if (PBR::AsynRenderer::GetInstance()->IsFinishAllTask())
         {
-            AsynRenderer::GetInstance()->ClearTasks();
+            PBR::AsynRenderer::GetInstance()->ClearTasks();
         }
 
     }
 
-    AsynRenderer::GetInstance()->Finalize();
-    ComputeShaderRenderer::GetInstance()->Finalize();
+    PBR::AsynRenderer::GetInstance()->Finalize();
+    PBR::ComputeShaderRenderer::GetInstance()->Finalize();
     // Cleanup
     ImGui_ImplGlfwGL3_Shutdown();
     ImGui::DestroyContext();
@@ -297,114 +303,203 @@ int main()
 ///////////////////////////////////////////////////////////////////////////
 // Modeling of Scene 1.
 ///////////////////////////////////////////////////////////////////////////
-
-void DefineScene1( Scene &scene, int imageWidth, int imageHeight )
+namespace Phong
 {
-	scene.backgroundColor = Color( 0.2f, 0.3f, 0.5f );
+    void DefineScene1(Scene &scene, int imageWidth, int imageHeight)
+    {
+        scene.backgroundColor = Color(0.2f, 0.3f, 0.5f);
 
-	scene.amLight.I_a = Color( 1.0f, 1.0f, 1.0f ) * 0.25f;
+        scene.amLight.I_a = Color(1.0f, 1.0f, 1.0f) * 0.25f;
 
-// Define materials.
+        // Define materials.
 
-	scene.numMaterials = 5;
-    EMPMaterial* emp_mats = new EMPMaterial[scene.numMaterials];
-    scene.material = emp_mats;
+        scene.numMaterials = 5;
+        scene.material = new Material[scene.numMaterials];
+        Material* mat = reinterpret_cast<Material*>(scene.material);
 
-	// Light red.
-	emp_mats[0].k_d = Color( 0.8f, 0.4f, 0.4f );
-	emp_mats[0].k_a = Color(0.8f, 0.4f, 0.4f);
-	emp_mats[0].k_r = Color( 0.8f, 0.8f, 0.8f ) / 1.5f;
-	emp_mats[0].k_rg = Color( 0.8f, 0.8f, 0.8f ) / 3.0f;
-	emp_mats[0].n = 32.0f;
+        // Light red.
+        scene.material[0].diffuse = Color(0.8f, 0.4f, 0.4f);
+        scene.material[0].ambient = Color(0.8f, 0.4f, 0.4f);
+        scene.material[0].specluar = Color(0.8f, 0.8f, 0.8f) / 1.5f;
+        scene.material[0].reflection = Color(0.8f, 0.8f, 0.8f) / 3.0f;
+        scene.material[0].shininess = 32.0f;
 
-	// Light green.
-	emp_mats[1].k_d = Color( 0.4f, 0.8f, 0.4f );
-	emp_mats[1].k_a = Color(0.4f, 0.8f, 0.4f);
-	emp_mats[1].k_r = Color( 0.8f, 0.8f, 0.8f ) / 1.5f;
-	emp_mats[1].k_rg = Color( 0.8f, 0.8f, 0.8f ) / 3.0f;
-	emp_mats[1].n = 64.0f;
+        // Light green.
+        scene.material[1].diffuse = Color(0.4f, 0.8f, 0.4f);
+        scene.material[1].ambient = Color(0.4f, 0.8f, 0.4f);
+        scene.material[1].specluar = Color(0.8f, 0.8f, 0.8f) / 1.5f;
+        scene.material[1].reflection = Color(0.8f, 0.8f, 0.8f) / 3.0f;
+        scene.material[1].shininess = 64.0f;
 
-	// Light blue.
-	emp_mats[2].k_d = Color( 0.4f, 0.4f, 0.8f ) * 0.9f;
-	emp_mats[2].k_a = Color(0.4f, 0.4f, 0.8f) * 0.9f;
-	emp_mats[2].k_r = Color( 0.8f, 0.8f, 0.8f ) / 1.5f;
-	emp_mats[2].k_rg = Color( 0.8f, 0.8f, 0.8f ) / 2.5f;
-	emp_mats[2].n = 64.0f;
+        // Light blue.
+        scene.material[2].diffuse = Color(0.4f, 0.4f, 0.8f) * 0.9f;
+        scene.material[2].ambient = Color(0.4f, 0.4f, 0.8f) * 0.9f;
+        scene.material[2].specluar = Color(0.8f, 0.8f, 0.8f) / 1.5f;
+        scene.material[2].reflection = Color(0.8f, 0.8f, 0.8f) / 2.5f;
+        scene.material[2].shininess = 64.0f;
 
-	// Yellow.
-	emp_mats[3].k_d = Color( 0.6f, 0.6f, 0.2f );
-	emp_mats[3].k_a = Color(0.6f, 0.6f, 0.2f);
-	emp_mats[3].k_r = Color( 0.8f, 0.8f, 0.8f ) / 1.5f;
-	emp_mats[3].k_rg = Color( 0.8f, 0.8f, 0.8f ) / 3.0f;
-	emp_mats[3].n = 64.0f;
+        // Yellow.
+        scene.material[3].diffuse = Color(0.6f, 0.6f, 0.2f);
+        scene.material[3].ambient = Color(0.6f, 0.6f, 0.2f);
+        scene.material[3].specluar = Color(0.8f, 0.8f, 0.8f) / 1.5f;
+        scene.material[3].reflection = Color(0.8f, 0.8f, 0.8f) / 3.0f;
+        scene.material[3].shininess = 64.0f;
 
-	// Gray.
-    emp_mats[4].k_d = Color(0.6f, 0.6f, 0.6f);
-    emp_mats[4].k_a = Color(0.6f, 0.6f, 0.6f);
-    emp_mats[4].k_r = Color(0.6f, 0.6f, 0.6f);
-    emp_mats[4].k_rg = Color(0.8f, 0.8f, 0.8f) / 3.0f;
-    emp_mats[4].n = 128.0f;
-
-
-// Define point light sources.
-
-	scene.numPtLights = 2;
-	scene.ptLight = new PointLightSource[ scene.numPtLights ];
-
-	scene.ptLight[0].I_source = Color( 1.0f, 1.0f, 1.0f ) * 0.6f;
-	scene.ptLight[0].position = Vector3d( 100.0, 120.0, 10.0 );
-
-	scene.ptLight[1].I_source = Color( 1.0f, 1.0f, 1.0f ) * 0.6f;
-	scene.ptLight[1].position = Vector3d( 5.0, 80.0, 60.0 );
+        // Gray.
+        scene.material[4].diffuse = Color(0.6f, 0.6f, 0.6f);
+        scene.material[4].ambient = Color(0.6f, 0.6f, 0.6f);
+        scene.material[4].specluar = Color(0.6f, 0.6f, 0.6f);
+        scene.material[4].reflection = Color(0.8f, 0.8f, 0.8f) / 3.0f;
+        scene.material[4].shininess = 128.0f;
 
 
-// Define surface primitives.
+        // Define point light sources.
 
-	scene.numSurfaces = 15;
-	scene.surfacep = new SurfacePtr[ scene.numSurfaces ];
+        scene.numPtLights = 2;
+        scene.ptLight = new PointLightSource[scene.numPtLights];
 
-	scene.surfacep[0] = new Plane( 0.0, 1.0, 0.0, 0.0, &(scene.material[2]) ); // Horizontal plane.
-	scene.surfacep[1] = new Plane( 1.0, 0.0, 0.0, 0.0, &(scene.material[4]) ); // Left vertical plane.
-	scene.surfacep[2] = new Plane( 0.0, 0.0, 1.0, 0.0, &(scene.material[4]) ); // Right vertical plane.
-	scene.surfacep[3] = new Sphere( Vector3d( 40.0, 20.0, 42.0 ), 22.0, &(scene.material[0]) ); // Big sphere.
-	scene.surfacep[4] = new Sphere( Vector3d( 75.0, 10.0, 40.0 ), 12.0, &(scene.material[1]) ); // Small sphere.
+        scene.ptLight[0].I_source = Color(1.0f, 1.0f, 1.0f) * 0.6f;
+        scene.ptLight[0].position = Vector3d(100.0, 120.0, 10.0);
 
-	// Cube +y face.
-	scene.surfacep[5] = new Triangle( Vector3d( 50.0, 20.0, 90.0 ), Vector3d( 50.0, 20.0, 70.0 ),
-		                              Vector3d( 30.0, 20.0, 70.0 ), &(scene.material[3]) );
-	scene.surfacep[6] = new Triangle( Vector3d( 50.0, 20.0, 90.0 ), Vector3d( 30.0, 20.0, 70.0 ),
-		                              Vector3d( 30.0, 20.0, 90.0 ), &(scene.material[3]) );
-
-	// Cube +x face.
-	scene.surfacep[7] = new Triangle( Vector3d( 50.0, 0.0, 70.0 ), Vector3d( 50.0, 20.0, 70.0 ),
-		                              Vector3d( 50.0, 20.0, 90.0 ), &(scene.material[3]) );
-	scene.surfacep[8] = new Triangle( Vector3d( 50.0, 0.0, 70.0 ), Vector3d( 50.0, 20.0, 90.0 ),
-		                              Vector3d( 50.0, 0.0, 90.0 ), &(scene.material[3]) );
-
-	// Cube -x face.
-	scene.surfacep[9] = new Triangle( Vector3d( 30.0, 0.0, 90.0 ), Vector3d( 30.0, 20.0, 90.0 ),
-		                              Vector3d( 30.0, 20.0, 70.0 ), &(scene.material[3]) );
-	scene.surfacep[10] = new Triangle( Vector3d( 30.0, 0.0, 90.0 ), Vector3d( 30.0, 20.0, 70.0 ),
-		                              Vector3d( 30.0, 0.0, 70.0 ), &(scene.material[3]) );
-
-	// Cube +z face.
-	scene.surfacep[11] = new Triangle( Vector3d( 50.0, 0.0, 90.0 ), Vector3d( 50.0, 20.0, 90.0 ),
-		                              Vector3d( 30.0, 20.0, 90.0 ), &(scene.material[3]) );
-	scene.surfacep[12] = new Triangle( Vector3d( 50.0, 0.0, 90.0 ), Vector3d( 30.0, 20.0, 90.0 ),
-		                              Vector3d( 30.0, 0.0, 90.0 ), &(scene.material[3]) );
-
-	// Cube -z face.
-	scene.surfacep[13] = new Triangle( Vector3d( 30.0, 0.0, 70.0 ), Vector3d( 30.0, 20.0, 70.0 ),
-		                              Vector3d( 50.0, 20.0, 70.0 ), &(scene.material[3]) );
-	scene.surfacep[14] = new Triangle( Vector3d( 30.0, 0.0, 70.0 ), Vector3d( 50.0, 20.0, 70.0 ),
-		                              Vector3d( 50.0, 0.0, 70.0 ), &(scene.material[3]) );
+        scene.ptLight[1].I_source = Color(1.0f, 1.0f, 1.0f) * 0.6f;
+        scene.ptLight[1].position = Vector3d(5.0, 80.0, 60.0);
 
 
-// Define camera.
+        // Define surface primitives.
 
-	scene.camera = Camera( Vector3d( 150.0, 120.0, 150.0 ), Vector3d( 45.0, 22.0, 55.0 ), Vector3d( 0.0, 1.0, 0.0 ),
-				   (-1.0 * imageWidth) / imageHeight, (1.0 * imageWidth) / imageHeight, -1.0, 1.0, 3.0, 
-				   imageWidth, imageHeight );
+        scene.numSurfaces = 15;
+        scene.surfacep = new SurfacePtr[scene.numSurfaces];
+
+        scene.surfacep[0] = new Plane(0.0, 1.0, 0.0, 0.0, &(scene.material[2])); // Horizontal plane.
+        scene.surfacep[1] = new Plane(1.0, 0.0, 0.0, 0.0, &(scene.material[4])); // Left vertical plane.
+        scene.surfacep[2] = new Plane(0.0, 0.0, 1.0, 0.0, &(scene.material[4])); // Right vertical plane.
+        scene.surfacep[3] = new Sphere(Vector3d(40.0, 20.0, 42.0), 22.0, &(scene.material[0])); // Big sphere.
+        scene.surfacep[4] = new Sphere(Vector3d(75.0, 10.0, 40.0), 12.0, &(scene.material[1])); // Small sphere.
+
+                                                                                                // Cube +y face.
+        scene.surfacep[5] = new Triangle(Vector3d(50.0, 20.0, 90.0), Vector3d(50.0, 20.0, 70.0),
+            Vector3d(30.0, 20.0, 70.0), &(scene.material[3]));
+        scene.surfacep[6] = new Triangle(Vector3d(50.0, 20.0, 90.0), Vector3d(30.0, 20.0, 70.0),
+            Vector3d(30.0, 20.0, 90.0), &(scene.material[3]));
+
+        // Cube +x face.
+        scene.surfacep[7] = new Triangle(Vector3d(50.0, 0.0, 70.0), Vector3d(50.0, 20.0, 70.0),
+            Vector3d(50.0, 20.0, 90.0), &(scene.material[3]));
+        scene.surfacep[8] = new Triangle(Vector3d(50.0, 0.0, 70.0), Vector3d(50.0, 20.0, 90.0),
+            Vector3d(50.0, 0.0, 90.0), &(scene.material[3]));
+
+        // Cube -x face.
+        scene.surfacep[9] = new Triangle(Vector3d(30.0, 0.0, 90.0), Vector3d(30.0, 20.0, 90.0),
+            Vector3d(30.0, 20.0, 70.0), &(scene.material[3]));
+        scene.surfacep[10] = new Triangle(Vector3d(30.0, 0.0, 90.0), Vector3d(30.0, 20.0, 70.0),
+            Vector3d(30.0, 0.0, 70.0), &(scene.material[3]));
+
+        // Cube +z face.
+        scene.surfacep[11] = new Triangle(Vector3d(50.0, 0.0, 90.0), Vector3d(50.0, 20.0, 90.0),
+            Vector3d(30.0, 20.0, 90.0), &(scene.material[3]));
+        scene.surfacep[12] = new Triangle(Vector3d(50.0, 0.0, 90.0), Vector3d(30.0, 20.0, 90.0),
+            Vector3d(30.0, 0.0, 90.0), &(scene.material[3]));
+
+        // Cube -z face.
+        scene.surfacep[13] = new Triangle(Vector3d(30.0, 0.0, 70.0), Vector3d(30.0, 20.0, 70.0),
+            Vector3d(50.0, 20.0, 70.0), &(scene.material[3]));
+        scene.surfacep[14] = new Triangle(Vector3d(30.0, 0.0, 70.0), Vector3d(50.0, 20.0, 70.0),
+            Vector3d(50.0, 0.0, 70.0), &(scene.material[3]));
+
+
+        // Define camera.
+
+        scene.camera = Camera(Vector3d(150.0, 120.0, 150.0), Vector3d(45.0, 22.0, 55.0), Vector3d(0.0, 1.0, 0.0),
+            (-1.0 * imageWidth) / imageHeight, (1.0 * imageWidth) / imageHeight, -1.0, 1.0, 3.0,
+            imageWidth, imageHeight);
+    }
+
+
+    void DefineScene2(Scene &scene, int imageWidth, int imageHeight)
+    {
+        //***********************************************
+        //*********** WRITE YOUR CODE HERE **************
+        scene.backgroundColor = Color(0.2f, 0.3f, 0.5f);
+
+        scene.amLight.I_a = Color(1.0f, 1.0f, 1.0f) * 0.35f;
+
+        scene.numMaterials = 5;
+        scene.material = new Material[scene.numMaterials];
+
+        // Light red.
+        scene.material[0].diffuse = Color(0.8f, 0.4f, 0.4f);
+        scene.material[0].ambient = Color(0.8f, 0.4f, 0.4f);
+        scene.material[0].specluar = Color(0.8f, 0.8f, 0.8f) / 1.5f;
+        scene.material[0].reflection = Color(0.8f, 0.8f, 0.8f) / 3.0f;
+        scene.material[0].shininess = 32.0f;
+
+        // Light green.
+        scene.material[1].diffuse = Color(0.4f, 0.8f, 0.4f);
+        scene.material[1].ambient = Color(0.4f, 0.8f, 0.4f);
+        scene.material[1].specluar = Color(0.8f, 0.8f, 0.8f) / 1.5f;
+        scene.material[1].reflection = Color(0.8f, 0.8f, 0.8f) / 3.0f;
+        scene.material[1].shininess = 64.0f;
+
+        // Light blue.
+        scene.material[2].diffuse = Color(0.4f, 0.4f, 0.8f) * 0.9f;
+        scene.material[2].ambient = Color(0.4f, 0.4f, 0.8f) * 0.9f;
+        scene.material[2].specluar = Color(0.8f, 0.8f, 0.8f) / 1.5f;
+        scene.material[2].reflection = Color(0.8f, 0.8f, 0.8f) / 2.5f;
+        scene.material[2].shininess = 64.0f;
+
+        // Yellow.
+        scene.material[3].diffuse = Color(0.6f, 0.6f, 0.2f);
+        scene.material[3].ambient = Color(0.6f, 0.6f, 0.2f);
+        scene.material[3].specluar = Color(0.8f, 0.8f, 0.8f) / 1.5f;
+        scene.material[3].reflection = Color(0.8f, 0.8f, 0.8f) / 3.0f;
+        scene.material[3].shininess = 64.0f;
+
+        // Gray.
+        scene.material[4].diffuse = Color(0.6f, 0.6f, 0.6f);
+        scene.material[4].ambient = Color(0.6f, 0.6f, 0.6f);
+        scene.material[4].specluar = Color(0.6f, 0.6f, 0.6f);
+        scene.material[4].reflection = Color(0.8f, 0.8f, 0.8f) / 3.0f;
+        scene.material[4].shininess = 128.0f;
+
+        scene.numPtLights = 2;
+        scene.ptLight = new PointLightSource[scene.numPtLights];
+
+        scene.ptLight[0].I_source = Color(1.0f, 1.0f, 1.0f) * 0.6f;
+        scene.ptLight[0].position = Vector3d(40.0, 220.0, 10.0);
+
+        scene.ptLight[1].I_source = Color(1.0f, 1.0f, 1.0f) * 0.6f;
+        scene.ptLight[1].position = Vector3d(175.0, 80.0, 60.0);
+
+        scene.numSurfaces = 20;
+        scene.surfacep = new SurfacePtr[scene.numSurfaces];
+
+        scene.surfacep[0] = new Plane(0.0, 1.0, 0.0, 0.0, &(scene.material[3]));
+        scene.surfacep[1] = new Plane(0.0, 0.0, 1.0, 0.0, &(scene.material[4]));
+
+        for (int i = 0; i < 14; i++)
+        {
+            scene.surfacep[2 + i] = new Sphere(Vector3d(-320 + 40 * i, 20.0, 80.0 + 20 * sin(M_PI / 1.8 * i)), 20.0, &(scene.material[rand() % scene.numMaterials]));
+        }
+
+        scene.surfacep[16] = new Triangle(Vector3d(0.0, 50.0, 0.0), Vector3d(50.0, 0.0, 0.0),
+            Vector3d(0.0, 0.0, 50.0), &(scene.material[0]));
+
+        scene.surfacep[17] = new Triangle(Vector3d(0.0, 50.0, 0.0), Vector3d(-50.0, 0.0, 0.0),
+            Vector3d(0.0, 0.0, 50.0), &(scene.material[0]));
+
+        scene.surfacep[18] = new Triangle(Vector3d(0.0, 50.0, 0.0), Vector3d(-50.0, 0.0, 0.0),
+            Vector3d(50.0, 0.0, 0.0), &(scene.material[0]));
+
+        scene.surfacep[19] = new Triangle(Vector3d(0.0, 0.0, 50.0), Vector3d(-50.0, 0.0, 0.0),
+            Vector3d(50.0, 0.0, 0.0), &(scene.material[0]));
+
+        scene.camera = Camera(Vector3d(300.0, 240.0, 300.0), Vector3d(45.0, 22.0, 55.0), Vector3d(0.0, 1.0, 0.0),
+            (-1.0 * imageWidth) / imageHeight, (1.0 * imageWidth) / imageHeight, -1.0, 1.0, 3.0,
+            imageWidth, imageHeight);;
+        //***********************************************
+
+
+    }
 }
 
 
@@ -415,138 +510,54 @@ void DefineScene1( Scene &scene, int imageWidth, int imageHeight )
 // Modeling of Scene 2.
 ///////////////////////////////////////////////////////////////////////////
 
-void DefineScene2( Scene &scene, int imageWidth, int imageHeight )
+
+namespace PBR
 {
-    //***********************************************
-    //*********** WRITE YOUR CODE HERE **************
-    scene.backgroundColor = Color( 0.2f, 0.3f, 0.5f );
-    
-    scene.amLight.I_a = Color( 1.0f, 1.0f, 1.0f ) * 0.35f;
-    
-    scene.numMaterials = 5;
-    EMPMaterial* emp_mats = new EMPMaterial[scene.numMaterials];
-    scene.material = emp_mats;
-
-    // Light red.
-    emp_mats[0].k_d = Color(0.8f, 0.4f, 0.4f);
-    emp_mats[0].k_a = Color(0.8f, 0.4f, 0.4f);
-    emp_mats[0].k_r = Color(0.8f, 0.8f, 0.8f) / 1.5f;
-    emp_mats[0].k_rg = Color(0.8f, 0.8f, 0.8f) / 3.0f;
-    emp_mats[0].n = 32.0f;
-
-    // Light green.
-    emp_mats[1].k_d = Color(0.4f, 0.8f, 0.4f);
-    emp_mats[1].k_a = Color(0.4f, 0.8f, 0.4f);
-    emp_mats[1].k_r = Color(0.8f, 0.8f, 0.8f) / 1.5f;
-    emp_mats[1].k_rg = Color(0.8f, 0.8f, 0.8f) / 3.0f;
-    emp_mats[1].n = 64.0f;
-
-    // Light blue.
-    emp_mats[2].k_d = Color(0.4f, 0.4f, 0.8f) * 0.9f;
-    emp_mats[2].k_a = Color(0.4f, 0.4f, 0.8f) * 0.9f;
-    emp_mats[2].k_r = Color(0.8f, 0.8f, 0.8f) / 1.5f;
-    emp_mats[2].k_rg = Color(0.8f, 0.8f, 0.8f) / 2.5f;
-    emp_mats[2].n = 64.0f;
-
-    // Yellow.
-    emp_mats[3].k_d = Color(0.6f, 0.6f, 0.2f);
-    emp_mats[3].k_a = Color(0.6f, 0.6f, 0.2f);
-    emp_mats[3].k_r = Color(0.8f, 0.8f, 0.8f) / 1.5f;
-    emp_mats[3].k_rg = Color(0.8f, 0.8f, 0.8f) / 3.0f;
-    emp_mats[3].n = 64.0f;
-
-    // Gray.
-    emp_mats[4].k_d = Color(0.6f, 0.6f, 0.6f);
-    emp_mats[4].k_a = Color(0.6f, 0.6f, 0.6f);
-    emp_mats[4].k_r = Color(0.6f, 0.6f, 0.6f);
-    emp_mats[4].k_rg = Color(0.8f, 0.8f, 0.8f) / 3.0f;
-    emp_mats[4].n = 128.0f;
-    
-    scene.numPtLights = 2;
-    scene.ptLight = new PointLightSource[ scene.numPtLights ];
-    
-    scene.ptLight[0].I_source = Color( 1.0f, 1.0f, 1.0f ) * 0.6f;
-    scene.ptLight[0].position = Vector3d( 40.0, 220.0, 10.0 );
-    
-    scene.ptLight[1].I_source = Color( 1.0f, 1.0f, 1.0f ) * 0.6f;
-    scene.ptLight[1].position = Vector3d( 175.0, 80.0, 60.0 );
-    
-    scene.numSurfaces = 20;
-    scene.surfacep = new SurfacePtr[ scene.numSurfaces ];
-    
-    scene.surfacep[0] = new Plane( 0.0, 1.0, 0.0, 0.0, &(emp_mats[3]) );
-    scene.surfacep[1] = new Plane( 0.0, 0.0, 1.0, 0.0, &(emp_mats[4]) );
-
-    for(int i = 0 ; i < 14 ; i++)
+    void DefineScene3(Scene &scene, int imageWidth, int imageHeight)
     {
-        scene.surfacep[2+i] = new Sphere(Vector3d( -320 + 40 * i, 20.0, 80.0 + 20 * sin(M_PI/1.8 * i) ), 20.0, &(emp_mats[rand()%scene.numMaterials]));
-    }
-    
-    scene.surfacep[16] = new Triangle( Vector3d( 0.0, 50.0, 0.0 ), Vector3d( 50.0, 0.0, 0.0 ),
-                                      Vector3d( 0.0, 0.0, 50.0 ), &(emp_mats[0]) );
-    
-    scene.surfacep[17] = new Triangle( Vector3d( 0.0, 50.0, 0.0 ), Vector3d( -50.0, 0.0, 0.0 ),
-                                      Vector3d( 0.0, 0.0, 50.0 ), &(emp_mats[0]) );
-    
-    scene.surfacep[18] = new Triangle( Vector3d( 0.0, 50.0, 0.0 ), Vector3d( -50.0, 0.0, 0.0 ),
-                                      Vector3d( 50.0, 0.0, 0.0 ), &(emp_mats[0]) );
-    
-    scene.surfacep[19] = new Triangle( Vector3d( 0.0, 0.0, 50.0 ), Vector3d( -50.0, 0.0, 0.0 ),
-                                      Vector3d( 50.0, 0.0, 0.0 ), &(emp_mats[0]) );
+        scene.backgroundColor = Color(0.0f, 0.0f, 0.0f);
 
-    scene.camera = Camera( Vector3d( 300.0, 240.0, 300.0 ), Vector3d( 45.0, 22.0, 55.0 ), Vector3d( 0.0, 1.0, 0.0 ),
-                          (-1.0 * imageWidth) / imageHeight, (1.0 * imageWidth) / imageHeight, -1.0, 1.0, 3.0,
-                          imageWidth, imageHeight );;
-    //***********************************************
-    
-    
+        scene.amLight.I_a = Color(1.0f, 1.0f, 1.0f) * 0.55f;
+
+        scene.numMaterials = 30;
+        scene.material = new Material[scene.numMaterials];
+        for (int i = 0; i < 6; i++)
+        {
+            for (int j = 0; j < 5; j++)
+            {
+                scene.material[j * 6 + i].albedo = Color(1.0f, 0.0f, 0.0f);
+                scene.material[j * 6 + i].metallic = 0.25f + i * 0.15f;// i * (1.0f / 5.0f);
+                scene.material[j * 6 + i].roughness = 0.1f + j * 0.2f;
+            }
+        }
+
+
+        scene.numSurfaces = 30;
+        scene.surfacep = new SurfacePtr[scene.numSurfaces];
+
+
+        for (int i = 0; i < 6; i++)
+        {
+            for (int j = 0; j < 5; j++)
+            {
+                scene.surfacep[j * 6 + i] = new Sphere(Vector3d(35.0 - i * 14, 25.0 - j * 12, 100.0), 5.0, &(scene.material)[j * 6 + i]);
+            }
+
+        }
+
+
+        scene.numPtLights = 2;
+        scene.ptLight = new PointLightSource[scene.numPtLights];
+
+        scene.ptLight[0].I_source = Color(300.0, 300.0, 300.0);
+        scene.ptLight[0].position = Vector3d(30.0, 40.0, 80.0);
+
+        scene.ptLight[1].I_source = Color(300.0, 300.0, 300.0);
+        scene.ptLight[1].position = Vector3d(-30.0, 40.0, 80.0);
+
+        scene.camera = Camera(Vector3d(0.0, 0.0, 0.0), Vector3d(0.0, 0.0, 10.0), Vector3d(0.0, 1.0, 0.0),
+            (-1.0 * imageWidth) / imageHeight, (1.0 * imageWidth) / imageHeight, -1.0, 1.0, 3.0,
+            imageWidth, imageHeight);;
+    }
 }
 
-
-void DefineScene3(Scene &scene, int imageWidth, int imageHeight)
-{
-    scene.backgroundColor = Color(0.0f, 0.0f, 0.0f);
-
-    scene.amLight.I_a = Color(1.0f, 1.0f, 1.0f) * 0.55f;
-
-    scene.numMaterials = 30;
-    PBRMaterial* emp_mats = new PBRMaterial[scene.numMaterials];
-    scene.material = emp_mats;
-    for (int i = 0; i < 6; i++)
-    {
-        for (int j = 0; j < 5; j++)
-        {
-            emp_mats[j * 6 + i].albedo = Color(1.0f, 0.0f, 0.0f);
-            emp_mats[j * 6 + i].metallic = 0.25f + i * 0.15f;// i * (1.0f / 5.0f);
-            emp_mats[j * 6 + i].roughness = 0.1f + j * 0.2f;
-        }
-    }
-
-
-    scene.numSurfaces = 30;
-    scene.surfacep = new SurfacePtr[scene.numSurfaces];
-
-
-    for (int i = 0; i < 6; i++)
-    {
-        for (int j = 0; j < 5; j++)
-        {
-            scene.surfacep[j * 6 + i] = new Sphere(Vector3d(35.0 - i * 14, 25.0 - j * 12, 100.0), 5.0, &(reinterpret_cast<PBRMaterial*>(scene.material)[j * 6 + i]));
-        }
-        
-    }
-
-
-    scene.numPtLights = 2;
-    scene.ptLight = new PointLightSource[scene.numPtLights];
-
-    scene.ptLight[0].I_source = Color(300.0, 300.0, 300.0);
-    scene.ptLight[0].position = Vector3d(30.0, 40.0, 80.0);
-
-    scene.ptLight[1].I_source = Color(300.0, 300.0, 300.0);
-    scene.ptLight[1].position = Vector3d(-30.0, 40.0, 80.0);
-
-    scene.camera = Camera(Vector3d(0.0,0.0,0.0), Vector3d(0.0, 0.0, 10.0), Vector3d(0.0, 1.0, 0.0),
-        (-1.0 * imageWidth) / imageHeight, (1.0 * imageWidth) / imageHeight, -1.0, 1.0, 3.0,
-        imageWidth, imageHeight);;
-}

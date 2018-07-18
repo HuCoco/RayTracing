@@ -12,14 +12,14 @@ public:
     double A, B, C, D;
 
 
-	Plane( double A_, double B_, double C_, double D_, Material *mat_ptr )
+	Plane( double A_, double B_, double C_, double D_, void *mat_ptr )
 	{ 
 		A = A_;  B = B_;  C = C_;  D = D_;  
 		matp = mat_ptr; 
 	}
 
 
-	Plane( const Vector3d &normal, const Vector3d &pointOnPlane, Material *mat_ptr )
+	Plane( const Vector3d &normal, const Vector3d &pointOnPlane, void *mat_ptr )
 	{
 		A = normal.x();
 		B = normal.y();

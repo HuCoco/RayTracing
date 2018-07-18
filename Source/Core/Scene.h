@@ -7,24 +7,48 @@
 #include "Light.h"
 #include "Surface.h"
 
-
-struct Scene
+namespace Phong
 {
-	SurfacePtr *surfacep;	// Array of pointers to surface primitives.
-	int numSurfaces;		// Number of surface primitives in array.
+    struct Scene
+    {
+        SurfacePtr *surfacep;	// Array of pointers to surface primitives.
+        int numSurfaces;		// Number of surface primitives in array.
 
-	Material *material;		// Array of materials.
-	int numMaterials;		// Number of materials in array.
+        Material* material;		// Array of materials.
+        int numMaterials;		// Number of materials in array.
 
-	PointLightSource *ptLight;	// Array of point light sources.
-	int numPtLights;			// Number of point light sources in array.
+        PointLightSource *ptLight;	// Array of point light sources.
+        int numPtLights;			// Number of point light sources in array.
 
-	AmbientLightSource amLight;	// The global ambient light source.
+        AmbientLightSource amLight;	// The global ambient light source.
 
-	Color backgroundColor;		// Use this color if ray hits nothing.
+        Color backgroundColor;		// Use this color if ray hits nothing.
 
-	Camera camera;	// The camera.
-};
+        Camera camera;	// The camera.
+    };
+}
+
+
+namespace PBR
+{
+    struct Scene
+    {
+        SurfacePtr *surfacep;	// Array of pointers to surface primitives.
+        int numSurfaces;		// Number of surface primitives in array.
+
+        Material* material;		// Array of materials.
+        int numMaterials;		// Number of materials in array.
+
+        PointLightSource *ptLight;	// Array of point light sources.
+        int numPtLights;			// Number of point light sources in array.
+
+        AmbientLightSource amLight;	// The global ambient light source.
+
+        Color backgroundColor;		// Use this color if ray hits nothing.
+
+        Camera camera;	// The camera.
+    };
+}
 
 
 #endif // _SCENE_H_

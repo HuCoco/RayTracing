@@ -23,37 +23,29 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-enum MaterialType
+namespace PBR
 {
-    EMP,
-    PBR,
-};
+    struct Material
+    {
+        Color albedo;
+        float metallic;
+        float roughness;
+    };
+}
 
-struct Material
+namespace Phong
 {
-    inline Material(MaterialType t) : type(t) {}
+    struct Material
+    {
+        Color ambient;
+        Color reflection;
+        Color diffuse;
+        Color specluar;
+        float shininess;
+    };
+}
 
-    MaterialType type;
-};
 
-struct EMPMaterial : public Material
-{
-    EMPMaterial():Material(EMP) {}
-	Color k_a;
-	Color k_d;
-	Color k_r;
-
-	float n; // The specular reflection exponent. It ranges from 0.0 to 128.0. 
-
-	Color k_rg;
-};
-
-struct PBRMaterial : public Material
-{
-    PBRMaterial() :Material(PBR) {}
-    Color albedo;
-    float metallic;
-    float roughness;
-};
 
 #endif // _MATERIAL_H_
+

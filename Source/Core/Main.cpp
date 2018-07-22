@@ -37,6 +37,7 @@
 #include <Renderer/AsynRenderer.h>
 #include <Core/Texture.h>
 #include "Renderer/ComputeShaderRenderer.h"
+#include "UI/RenderUI.h"
 using namespace std;
 
 
@@ -120,59 +121,30 @@ namespace Phong
     void DefineScene3(Scene &scene, int imageWidth, int imageHeight);
 }
 
-
-
-
-void WaitForEnterKeyBeforeExit( void )
-{
-    fflush( stdin );
-    getchar();
-}
-
 static void glfw_error_callback(int error, const char* description)
 {
     fprintf(stderr, "Error %d: %s\n", error, description);
 }
 
 Texture tex;
+
+
+
+
 int main()
 {
+    RenderUI::GetInstance()->Initialize();
     PBR::AsynRenderer::GetInstance()->Initialize();
     Phong::AsynRenderer::GetInstance()->Initialize();
-//	atexit( WaitForEnterKeyBeforeExit );
-//
-//
-//
-// Define Scene 1.
 
 	Phong::Scene scene1;
 	DefineScene1( scene1, imageWidth1, imageHeight1 );
-
-// Render Scene 1.
-
-	//printf( "Render Scene 1...\n" );
-	//RenderImage( "C:/Users/Huke/Desktop/ImageTest/out1.tga", scene1, reflectLevels1, hasShadow1 );
-	//printf( "Image completed.\n" );
-//
-//
-//
-// Define Scene 2.
 
 	Phong::Scene scene2;
 	DefineScene2( scene2, imageWidth2, imageHeight2 );
 
     PBR::Scene scene3;
     DefineScene3(scene3, imageWidth3, imageHeight3);
-
-// Render Scene 2.
-
-	printf( "Render Scene 2...\n" );
-	
-	printf( "Image completed.\n" );
-
-
-	printf( "All done.\n" );
-
 
     glfwSetErrorCallback(glfw_error_callback);
     if (!glfwInit())
@@ -209,6 +181,27 @@ int main()
     {   
         glfwPollEvents();
         ImGui_ImplGlfwGL3_NewFrame();
+
+        RenderUI::GetInstance()->Update();
+
+        ImGui::Begin("Render Option");
+        {
+            static int light_mode = 0;
+            ImGui::Text("Lighting Model:");
+            ImGui::Separator();
+            
+            ImGui::RadioButton("Traditional Rendering", &light_mode, 1);
+            ImGui::RadioButton("Physicall Base Rendering", &light_mode, 2);
+
+
+
+          
+        }
+
+
+
+        ImGui::End();
+        ImGui::ShowDemoWindow();
         gImage.UpdateTexture();
         {
             static uint32_t aaa = 0;
@@ -286,6 +279,7 @@ int main()
 
     PBR::AsynRenderer::GetInstance()->Finalize();
     PBR::ComputeShaderRenderer::GetInstance()->Finalize();
+    RenderUI::GetInstance()->Finalize();
     // Cleanup
     ImGui_ImplGlfwGL3_Shutdown();
     ImGui::DestroyContext();

@@ -144,6 +144,7 @@
     <ClInclude Include="Source\Core\Ray.h" />
     <ClInclude Include="Source\Core\Raytrace.h" />
     <ClInclude Include="Source\Core\Scene.h" />
+    <ClInclude Include="Source\Core\SceneManager.h" />
     <ClInclude Include="Source\Core\Sphere.h" />
     <ClInclude Include="Source\Core\Surface.h" />
     <ClInclude Include="Source\Core\Texture.h" />
@@ -176,6 +177,7 @@
     <ClInclude Include="Source\Platform\Thread\Thread.h" />
     <ClInclude Include="Source\Renderer\AsynRenderer.h" />
     <ClInclude Include="Source\Renderer\ComputeShaderRenderer.h" />
+    <ClInclude Include="Source\UI\RenderUI.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Extension\gl3w\GL\gl3w.c" />
@@ -185,6 +187,7 @@
     <ClCompile Include="Source\Core\Main.cpp" />
     <ClCompile Include="Source\Core\Plane.cpp" />
     <ClCompile Include="Source\Core\Raytrace.cpp" />
+    <ClCompile Include="Source\Core\SceneManager.cpp" />
     <ClCompile Include="Source\Core\Sphere.cpp" />
     <ClCompile Include="Source\Core\Texture.cpp" />
     <ClCompile Include="Source\Core\Triangle.cpp" />
@@ -196,6 +199,7 @@
     <ClCompile Include="Source\Platform\Thread\Thread.cpp" />
     <ClCompile Include="Source\Renderer\AsynRenderer.cpp" />
     <ClCompile Include="Source\Renderer\ComputeShaderRenderer.cpp" />
+    <ClCompile Include="Source\UI\RenderUI.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

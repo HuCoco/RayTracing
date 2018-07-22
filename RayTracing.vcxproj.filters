@@ -43,6 +43,9 @@
     <Filter Include="Renderer">
       <UniqueIdentifier>{d0d83e48-d3c8-48da-8951-555b13efc979}</UniqueIdentifier>
     </Filter>
+    <Filter Include="UI">
+      <UniqueIdentifier>{5a1eb159-2b1c-47dd-923c-d9dcaf134ee3}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Math\Accel\MathAccel.h">
@@ -180,6 +183,12 @@
     <ClInclude Include="Source\Renderer\ComputeShaderRenderer.h">
       <Filter>Renderer</Filter>
     </ClInclude>
+    <ClInclude Include="Source\UI\RenderUI.h">
+      <Filter>UI</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\SceneManager.h">
+      <Filter>Core\Scene</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\ImGui\imgui.cpp">
@@ -233,6 +242,12 @@
     </ClCompile>
     <ClCompile Include="Source\Renderer\ComputeShaderRenderer.cpp">
       <Filter>Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\UI\RenderUI.cpp">
+      <Filter>UI</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\SceneManager.cpp">
+      <Filter>Core\Scene</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

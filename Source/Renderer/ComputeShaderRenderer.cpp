@@ -157,22 +157,9 @@ namespace PBR
         mNumActivePointLight = scene.numPtLights < 32 ? scene.numPtLights : 32;
         for (uint32_t i = 0; i < mNumActivePointLight; ++i)
         {
-            float xx;
-            float yy;
-            if (i % 2 == 0)
-            {
-                xx = sin(a)*range;
-                yy = cos(a)*range;
-
-            }
-            else
-            {
-                xx = -sin(a)*range;
-                yy = -cos(a)*range;
-            }
-            mPointLightList[i].position.x = (float)scene.ptLight[i].position.x() + xx;
-            mPointLightList[i].position.y = (float)scene.ptLight[i].position.y() + yy;
-            mPointLightList[i].position.z = (float)scene.ptLight[i].position.z() + yy;
+            mPointLightList[i].position.x = (float)scene.ptLight[i].position.x();
+            mPointLightList[i].position.y = (float)scene.ptLight[i].position.y();
+            mPointLightList[i].position.z = (float)scene.ptLight[i].position.z();
             mPointLightList[i].color = scene.ptLight[i].I_source;
         }
 

@@ -26,9 +26,16 @@
 class Surface 
 {
 public:
+    enum SurfaceType
+    {
+        SPHERER_SURFACE,
+        PLANE_SURFACE,
+        TRIANGLE_SURFACE
+    };
+
 
 	void *matp;	// Material of the surface.
-
+    SurfaceType type;
 
 	// Does a Ray hit the Surface?
 	virtual bool hit( 

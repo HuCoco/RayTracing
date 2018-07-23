@@ -5,6 +5,8 @@
 #define MAX_NUM_POINT_LIGHTS 32
 #define MAX_NUM_MATERIALS 32
 #define MAX_NUM_SPHERES 32
+#define MAX_NUM_PLANES 32
+#define MAX_NUM_TRIANGLES 32
 
 layout (local_size_x = 16, local_size_y = 16) in; 
 
@@ -14,6 +16,7 @@ layout (rgba32f, binding = 0) uniform image2D output_image;
 struct DirectionLightData
 {
 	vec3 color;
+	vec3 direction;
 };
 
 struct PointLightData
@@ -35,6 +38,27 @@ struct SphereData
 	float radius;
 	int mat;
 };
+
+struct PlaneData
+{
+    float A;
+    float B;
+    float C;
+    float D;
+    int mat;
+};
+
+struct TriangleData
+{
+    vec3 v0;
+    vec3 v1;
+    vec3 v2;
+    vec3 n0;
+    vec3 n1;
+    vec3 n2;
+    int mat;
+};
+
 
 struct Ray
 {
@@ -85,7 +109,19 @@ layout(std140, binding = 3) uniform Sphere
 };
 uniform uint NumActiveSpheres;
 
-layout(std140, binding = 4) uniform Camera
+layout(std140, binding = 4) uniform Plane
+{
+	PlaneData Planes[MAX_NUM_PLANES];
+};
+uniform uint mNumActivePlanes;
+
+layout(std140, binding = 5) uniform Triangle
+{
+	TriangleData Triangles[MAX_NUM_TRIANGLES];
+};
+uniform uint mNumActiveTriangles;
+
+layout(std140, binding = 6) uniform Camera
 {
 	CameraData Cameras;
 };
@@ -215,6 +251,64 @@ bool SphereHit(SphereData sphere, Ray ray, float tmin, float tmax, bool onlyChec
     return false;
 }
 
+bool PlaneHit(PlaneData plane, Ray ray, float tmin, float tmax, bool onlyCheckShadow)
+{
+	vec3 N = vec3(plane.A, plane.B, plane.C);
+	float NRd = dot(N, ray.direction);
+	float NRo = dot(N, ray.origin);
+	float t = (-plane.D - NRo) / NRd;
+
+	if ( t >= tmin && t <= tmax )
+    {
+    	if(onlyCheckShadow == false)
+    	{
+	    	tempHitRec.t = t;
+	    	tempHitRec.p = ray.origin + t * ray.direction;
+	    	tempHitRec.n = N;
+	    	tempHitRec.mat = plane.mat;
+    	}
+    	return true;
+    }
+    return false;
+}
+
+bool TriangleHit(TriangleData triangle, Ray ray, float tmin, float tmax, bool onlyCheckShadow)
+{
+	vec3 e1 = triangle.v1 - triangle.v0;
+	vec3 e2 = triangle.v2 - triangle.v0;
+	vec3 p = cross(ray.direction, e2);
+	float a = dot(e1,p);
+	float f = 1.0 / a;
+	vec3 s = ray.origin - triangle.v0;
+	float beta = f * dot(s, p);
+	if (beta < 0.0 || beta > 1.0)
+	{
+		return false;
+	}
+
+	vec3 q = cross( s, e1 );
+    float gamma = f * dot( ray.direction, q );
+    if ( gamma < 0.0 || beta + gamma > 1.0 ) 
+	{
+		return false;
+	}
+
+	float t = f * dot( e2, q );
+	if ( t >= tmin && t <= tmax )
+    {
+    	if(onlyCheckShadow == false)
+    	{
+    		tempHitRec.t = t;
+	    	tempHitRec.p = ray.origin + t * ray.direction;
+	    	float alpha = 1.0f - beta - gamma;
+	    	tempHitRec.n = alpha * triangle.n0 + beta * triangle.n1 + gamma * triangle.n2;
+	    	tempHitRec.mat = triangle.mat;
+    	}
+    	return true;
+    }
+    return false;
+}
+
 const float DEFAULT_TMAX = 3.402823466e+38F;
 const float DEFAULT_TMIN = 1.175494351e-38F;
 
@@ -224,6 +318,7 @@ vec4 RayTrace(Ray ray, uint reflectLevels, bool hasShadow)
 	bool hasHitSomething = false;
 	ray.direction = normalize(ray.direction);
 	float nearest_t = DEFAULT_TMAX;
+
 	for(int i = 0 ; i < NumActiveSpheres ; i++)
 	{
 		bool hasHit = SphereHit(Spheres[i],ray,DEFAULT_TMIN,DEFAULT_TMAX,false);
@@ -233,7 +328,28 @@ vec4 RayTrace(Ray ray, uint reflectLevels, bool hasShadow)
 			nearest_t = tempHitRec.t;
 			nearestHitRec = tempHitRec;
 		}
+	}
 
+	for(int i = 0 ; i < mNumActivePlanes ; i++)
+	{
+		bool hasHit = PlaneHit(Planes[i],ray,DEFAULT_TMIN,DEFAULT_TMAX,false);
+		if(hasHit && tempHitRec.t < nearest_t)
+		{
+			hasHitSomething = true;
+			nearest_t = tempHitRec.t;
+			nearestHitRec = tempHitRec;
+		}
+	}
+
+	for(int i = 0 ; i < mNumActiveTriangles ; i++)
+	{
+		bool hasHit = TriangleHit(Triangles[i],ray,DEFAULT_TMIN,DEFAULT_TMAX,false);
+		if(hasHit && tempHitRec.t < nearest_t)
+		{
+			hasHitSomething = true;
+			nearest_t = tempHitRec.t;
+			nearestHitRec = tempHitRec;
+		}
 	}
 
 	if(!hasHitSomething)

@@ -16,6 +16,7 @@ public:
 	{ 
 		A = A_;  B = B_;  C = C_;  D = D_;  
 		matp = mat_ptr; 
+        type = Surface::PLANE_SURFACE;
 	}
 
 

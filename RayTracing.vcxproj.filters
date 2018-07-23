@@ -46,6 +46,9 @@
     <Filter Include="UI">
       <UniqueIdentifier>{5a1eb159-2b1c-47dd-923c-d9dcaf134ee3}</UniqueIdentifier>
     </Filter>
+    <Filter Include="SceneViewer">
+      <UniqueIdentifier>{db26bad5-1a10-4c4b-8eea-56c4bc1a1ff3}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Math\Accel\MathAccel.h">
@@ -189,6 +192,15 @@
     <ClInclude Include="Source\Core\SceneManager.h">
       <Filter>Core\Scene</Filter>
     </ClInclude>
+    <ClInclude Include="Source\SceneViewer\SceneViewer.h">
+      <Filter>SceneViewer</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\SceneViewer\PBRViewer.h">
+      <Filter>SceneViewer</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\SceneViewer\BlinnPhongViewer.h">
+      <Filter>SceneViewer</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\ImGui\imgui.cpp">
@@ -248,6 +260,15 @@
     </ClCompile>
     <ClCompile Include="Source\Core\SceneManager.cpp">
       <Filter>Core\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\SceneViewer\SceneViewer.cpp">
+      <Filter>SceneViewer</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\SceneViewer\PBRViewer.cpp">
+      <Filter>SceneViewer</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\SceneViewer\BlinnPhongViewer.cpp">
+      <Filter>SceneViewer</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

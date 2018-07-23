@@ -192,9 +192,6 @@ int main()
             
             ImGui::RadioButton("Traditional Rendering", &light_mode, 1);
             ImGui::RadioButton("Physicall Base Rendering", &light_mode, 2);
-
-
-
           
         }
 
@@ -512,6 +509,7 @@ namespace PBR
         scene.backgroundColor = Color(0.0f, 0.0f, 0.0f);
 
         scene.amLight.I_a = Color(1.0f, 1.0f, 1.0f) * 0.55f;
+
 
         scene.numMaterials = 30;
         scene.material = new Material[scene.numMaterials];

@@ -177,6 +177,9 @@
     <ClInclude Include="Source\Platform\Thread\Thread.h" />
     <ClInclude Include="Source\Renderer\AsynRenderer.h" />
     <ClInclude Include="Source\Renderer\ComputeShaderRenderer.h" />
+    <ClInclude Include="Source\SceneViewer\BlinnPhongViewer.h" />
+    <ClInclude Include="Source\SceneViewer\PBRViewer.h" />
+    <ClInclude Include="Source\SceneViewer\SceneViewer.h" />
     <ClInclude Include="Source\UI\RenderUI.h" />
   </ItemGroup>
   <ItemGroup>
@@ -199,6 +202,9 @@
     <ClCompile Include="Source\Platform\Thread\Thread.cpp" />
     <ClCompile Include="Source\Renderer\AsynRenderer.cpp" />
     <ClCompile Include="Source\Renderer\ComputeShaderRenderer.cpp" />
+    <ClCompile Include="Source\SceneViewer\BlinnPhongViewer.cpp" />
+    <ClCompile Include="Source\SceneViewer\PBRViewer.cpp" />
+    <ClCompile Include="Source\SceneViewer\SceneViewer.cpp" />
     <ClCompile Include="Source\UI\RenderUI.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

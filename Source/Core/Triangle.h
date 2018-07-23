@@ -17,6 +17,7 @@ public:
 		v0 = v0_;  v1 = v1_;  v2 = v2_;
 		n0 = n1 = n2 = triNormal( v0, v1, v2 );
 		matp = mat_ptr;
+        type = Surface::TRIANGLE_SURFACE;
 	}
 
 
@@ -26,6 +27,7 @@ public:
 		v0 = v0_;  v1 = v1_;  v2 = v2_; 
 		n0 = n0_;  n1 = n1_;  n2 = n2_;  
 		matp = mat_ptr;
+        type = Surface::TRIANGLE_SURFACE;
 	}
 
 

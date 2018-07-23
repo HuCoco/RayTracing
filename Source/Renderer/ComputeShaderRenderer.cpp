@@ -8,6 +8,9 @@ namespace PBR
 #define MAX_NUM_POINT_LIGHTS 32
 #define MAX_NUM_MATERIALS 32
 #define MAX_NUM_SPHERES 32
+#define MAX_NUM_PLANES 32
+#define MAX_NUM_TRIANGLES 32
+
 
     ComputeShaderRenderer::ComputeShaderRenderer()
     {
@@ -84,7 +87,6 @@ namespace PBR
 
     void ComputeShaderRenderer::Render()
     {
-
         glUseProgram(mProgram);
         glFinish();
         auto a = glGetError();
@@ -134,7 +136,7 @@ namespace PBR
         glBindBufferBase(GL_UNIFORM_BUFFER, 1, PointLightsHandle);
         glBindBufferBase(GL_UNIFORM_BUFFER, 2, MaterialsHandle);
         glBindBufferBase(GL_UNIFORM_BUFFER, 3, SpheresHandle);
-        glBindBufferBase(GL_UNIFORM_BUFFER, 4, CameraHandle);
+        glBindBufferBase(GL_UNIFORM_BUFFER, 6, CameraHandle);
 
         auto a = glGetUniformLocation(mProgram, "NumActiveSpheres");
         glUniform1ui(glGetUniformLocation(mProgram, "NumActiveLights"), mNumActivePointLight);
@@ -182,21 +184,21 @@ namespace PBR
         }
 
 
-        mCamera.COP.x = scene.camera.mCOP.x();
-        mCamera.COP.y = scene.camera.mCOP.y();
-        mCamera.COP.z = scene.camera.mCOP.z();
+        mCamera.COP.x = (float)scene.camera.mCOP.x();
+        mCamera.COP.y = (float)scene.camera.mCOP.y();
+        mCamera.COP.z = (float)scene.camera.mCOP.z();
 
-        mCamera.ImageOrigin.x = scene.camera.mImageOrigin.x();
-        mCamera.ImageOrigin.y = scene.camera.mImageOrigin.y();
-        mCamera.ImageOrigin.z = scene.camera.mImageOrigin.z();
+        mCamera.ImageOrigin.x = (float)scene.camera.mImageOrigin.x();
+        mCamera.ImageOrigin.y = (float)scene.camera.mImageOrigin.y();
+        mCamera.ImageOrigin.z = (float)scene.camera.mImageOrigin.z();
 
-        mCamera.ImageU.x = scene.camera.mImageU.x();
-        mCamera.ImageU.y = scene.camera.mImageU.y();
-        mCamera.ImageU.z = scene.camera.mImageU.z();
+        mCamera.ImageU.x = (float)scene.camera.mImageU.x();
+        mCamera.ImageU.y = (float)scene.camera.mImageU.y();
+        mCamera.ImageU.z = (float)scene.camera.mImageU.z();
 
-        mCamera.ImageV.x = scene.camera.mImageV.x();
-        mCamera.ImageV.y = scene.camera.mImageV.y();
-        mCamera.ImageV.z = scene.camera.mImageV.z();
+        mCamera.ImageV.x = (float)scene.camera.mImageV.x();
+        mCamera.ImageV.y = (float)scene.camera.mImageV.y();
+        mCamera.ImageV.z = (float)scene.camera.mImageV.z();
 
         mCamera.ImageWidth = scene.camera.getImageWidth();
         mCamera.ImageHeight = scene.camera.getImageHeight();

@@ -37,6 +37,7 @@ struct PointLightSource
 
 struct AmbientLightSource
 {
+    Vector3d direction;
 	Color I_a;
 };
 

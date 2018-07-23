@@ -12,7 +12,9 @@ public:
 
 
 	Sphere( const Vector3d &theCenter, double theRadius, void *mat_ptr )
-		{ center = theCenter;  radius = theRadius;  matp = mat_ptr; }
+    {
+        center = theCenter;  radius = theRadius;  matp = mat_ptr;  type = Surface::SPHERER_SURFACE;
+    }
 
 
     virtual bool hit( 

@@ -95,6 +95,8 @@ public:
     void SetActive(bool active) { m_IsActive = active; }
     const std::string& GetName() { return m_Name; }
     void SetImTextureID(ImTextureID id) { m_TexID = id; }
+    inline int GetWidth() { return m_Width; }
+    inline int GetHeight() { return m_Height; }
 private:
     bool m_IsActive;
     std::string m_Name;

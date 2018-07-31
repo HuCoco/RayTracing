@@ -11,9 +11,9 @@ public:
     double radius;
 
 
-	Sphere( const Vector3d &theCenter, double theRadius, void *mat_ptr )
+	Sphere( const Vector3d &theCenter, double theRadius, int mat_index)
     {
-        center = theCenter;  radius = theRadius;  matp = mat_ptr;  type = Surface::SPHERER_SURFACE;
+        center = theCenter;  radius = theRadius;  mat = mat_index;  type = Surface::SPHERER_SURFACE;
     }
 
 

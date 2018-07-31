@@ -158,7 +158,7 @@ namespace Phong
                 }
             }
 
-            result += computePhongLighting(L, N, V, reinterpret_cast<Material*>(nearestHitRec.mat_ptr), scene.ptLight[i]);
+            result += computePhongLighting(L, N, V, &scene.material[(nearestHitRec.mat)], scene.ptLight[i]);
             //result += computeBlinnPhongLighting(L, N, V, *nearestHitRec.mat_ptr, scene.ptLight[i]);
 
 
@@ -174,7 +174,7 @@ namespace Phong
         //*********** WRITE YOUR CODE HERE **************
 
         result /= scene.numPtLights;
-        result += scene.amLight.I_a * reinterpret_cast<Material*>(nearestHitRec.mat_ptr)->ambient;
+        result += scene.amLight.I_a * scene.material[(nearestHitRec.mat)].ambient;
 
         //***********************************************
 
@@ -190,7 +190,7 @@ namespace Phong
         {
             Vector3d dir = mirrorReflect(V, N);
             Ray rRay(nearestHitRec.p, dir);
-            result += reinterpret_cast<Material*>(nearestHitRec.mat_ptr)->reflection * TraceRay(rRay, scene, --reflectLevels, hasShadow);
+            result += scene.material[(nearestHitRec.mat)].reflection * TraceRay(rRay, scene, --reflectLevels, hasShadow);
         }
         //***********************************************
 
@@ -308,7 +308,7 @@ namespace PBR
             }
 
             float attenuation = 1.0 / (MaxLength * MaxLength);
-            result += computeBRDF(L, V, N, reinterpret_cast<Material*>(nearestHitRec.mat_ptr), scene.ptLight[i], attenuation);
+            result += computeBRDF(L, V, N, &scene.material[(nearestHitRec.mat)], scene.ptLight[i], attenuation);
 
         }
         //***********************************************
@@ -319,7 +319,7 @@ namespace PBR
 
         //***********************************************
         //*********** WRITE YOUR CODE HERE **************
-        Color ambient = Color(0.03) * reinterpret_cast<Material*>(nearestHitRec.mat_ptr)->albedo;
+        Color ambient = Color(0.03) * scene.material[(nearestHitRec.mat)].albedo;
         result += ambient;
         result = result / (result + Color(1.0f));
         result.gammaCorrect();
@@ -339,15 +339,15 @@ namespace PBR
             Ray rRay(nearestHitRec.p, dir);
 
             float NoV = dot(N, V);
-            Color envBRDF = lut_tex.GetPixel(NoV, reinterpret_cast<Material*>(nearestHitRec.mat_ptr)->roughness);
-            Vector3d F0 = Vector3d(reinterpret_cast<Material*>(nearestHitRec.mat_ptr)->roughness);
-            Vector3d albedo = Vector3d(reinterpret_cast<Material*>(nearestHitRec.mat_ptr)->albedo.r(), reinterpret_cast<Material*>(nearestHitRec.mat_ptr)->albedo.g(), reinterpret_cast<Material*>(nearestHitRec.mat_ptr)->albedo.b());
-            F0 = Lerp(F0, albedo, reinterpret_cast<Material*>(nearestHitRec.mat_ptr)->metallic);
+            Color envBRDF = lut_tex.GetPixel(NoV, scene.material[(nearestHitRec.mat)].roughness);
+            Vector3d F0 = Vector3d(scene.material[(nearestHitRec.mat)].roughness);
+            Vector3d albedo = Vector3d(scene.material[(nearestHitRec.mat)].albedo.r(), scene.material[(nearestHitRec.mat)].albedo.g(), scene.material[(nearestHitRec.mat)].albedo.b());
+            F0 = Lerp(F0, albedo, scene.material[(nearestHitRec.mat)].metallic);
             Color F = FresnelEquation(N, V, F0);
 
             Color kS = F;
             Color kD = Color(1.0, 1.0, 1.0) - kS;
-            kD *= 1.0 - reinterpret_cast<Material*>(nearestHitRec.mat_ptr)->metallic;
+            kD *= 1.0 - scene.material[(nearestHitRec.mat)].metallic;
 
 
             result += (kD * envBRDF.r() + envBRDF.g()) * TraceRay(rRay, scene, --reflectLevels, hasShadow);

@@ -144,7 +144,7 @@ namespace PBR
         glUniform1ui(glGetUniformLocation(mProgram, "NumActiveSpheres"), mNumActiveSpheres);
         glUniform1ui(glGetUniformLocation(mProgram, "NumSample"), 100);
         glUniform1ui(glGetUniformLocation(mProgram, "ReflectLevels"), 1);
-        glUniform1i(glGetUniformLocation(mProgram, "HasShadow"), 0);
+        glUniform1i(glGetUniformLocation(mProgram, "HasShadow"), 1);
     }
 
     void ComputeShaderRenderer::GenerateShaderData(const Scene& scene)
@@ -180,7 +180,7 @@ namespace PBR
             mSphereList[i].center.y = reinterpret_cast<::Sphere*>(scene.surfacep[i])->center.y();
             mSphereList[i].center.z = reinterpret_cast<::Sphere*>(scene.surfacep[i])->center.z();
             mSphereList[i].radius = reinterpret_cast<::Sphere*>(scene.surfacep[i])->radius;
-            mSphereList[i].mat = i;
+            mSphereList[i].mat = reinterpret_cast<::Sphere*>(scene.surfacep[i])->mat;
         }
 
 

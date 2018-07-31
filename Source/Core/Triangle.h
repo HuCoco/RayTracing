@@ -12,21 +12,21 @@ public:
 	Vector3d n0, n1, n2; // Vertex normals.
 
 
-	Triangle( const Vector3d &v0_, const Vector3d &v1_, const Vector3d &v2_, void *mat_ptr )
+	Triangle( const Vector3d &v0_, const Vector3d &v1_, const Vector3d &v2_, int mat_index )
 	{
 		v0 = v0_;  v1 = v1_;  v2 = v2_;
-		n0 = n1 = n2 = triNormal( v0, v1, v2 );
-		matp = mat_ptr;
+		n0 = n1 = n2 = triNormal( v0, v1, v2 ).makeUnitVector();
+		mat = mat_index;
         type = Surface::TRIANGLE_SURFACE;
 	}
 
 
 	Triangle( const Vector3d &v0_, const Vector3d &v1_, const Vector3d &v2_,
-			  const Vector3d &n0_, const Vector3d &n1_, const Vector3d &n2_, void *mat_ptr )
+			  const Vector3d &n0_, const Vector3d &n1_, const Vector3d &n2_, int mat_index)
 	{
 		v0 = v0_;  v1 = v1_;  v2 = v2_; 
 		n0 = n0_;  n1 = n1_;  n2 = n2_;  
-		matp = mat_ptr;
+        mat = mat_index;
         type = Surface::TRIANGLE_SURFACE;
 	}
 

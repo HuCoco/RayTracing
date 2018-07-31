@@ -17,7 +17,7 @@
         float u;
         float v;
         Vector3d normal;   // Surface normal at p. May not be unit vector.
-        void *mat_ptr; // Pointer to the surface material.
+        int mat; // Pointer to the surface material.
     };
 
 
@@ -34,7 +34,7 @@ public:
     };
 
 
-	void *matp;	// Material of the surface.
+	int mat;	// Material of the surface.
     SurfaceType type;
 
 	// Does a Ray hit the Surface?

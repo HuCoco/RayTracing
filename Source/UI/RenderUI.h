@@ -97,6 +97,7 @@ public:
     void SetImTextureID(ImTextureID id) { m_TexID = id; }
     inline int GetWidth() { return m_Width; }
     inline int GetHeight() { return m_Height; }
+    void GetImTextureID(ImTextureID id) { m_TexID =  id; }
 private:
     bool m_IsActive;
     std::string m_Name;

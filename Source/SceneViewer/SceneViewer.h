@@ -19,9 +19,12 @@ public:
     virtual void Finalize() = 0;
     virtual void Update() = 0;
     virtual void UpdateShaderData();
-
+    virtual void SetScene(void* scene) = 0;
+    virtual void SetViewWindow(ViewWindow* output);
+    void DoRender();
 protected:
     ViewWindow* m_OutputWindow;
+    GLuint mOutputTexture;
     GLuint mShader;
     GLuint mProgram;
 
@@ -40,6 +43,7 @@ protected:
         float C;
         float D;
         uint32_t mat;
+        float _pad[3];
     };
 
     struct TriangleData
@@ -60,9 +64,10 @@ protected:
         float _pad_5;
 
         Vec3f n3;
-        float _pad_6;
 
         uint32_t mat;
+
+        
     };
 
     struct PointLightData
@@ -78,6 +83,7 @@ protected:
         Color color;
         float _pad_1;
         Vec3f direction;
+        float _pad_2;
     };
 
 
@@ -98,25 +104,25 @@ protected:
     Color mBackgroundColor;
 
     SphereData mSphereList[MAX_NUM_SPHERES];
-    uint32_t mNumActiveSpheres;
+    uint32_t mNumActiveSpheres{ 0 };
 
     PlaneData mPlaneList[MAX_NUM_PLANES];
-    uint32_t mNumActivePlanes;
+    uint32_t mNumActivePlanes{ 0 };
 
     TriangleData mTriangleList[MAX_NUM_TRIANGLES];
-    uint32_t mNumActiveTriangles;
+    uint32_t mNumActiveTriangles{ 0 };
 
     PointLightData mPointLightList[MAX_NUM_POINT_LIGHTS];
-    uint32_t mNumActivePointLight;
+    uint32_t mNumActivePointLight{ 0 };
 
     DirectionLightData mDirectionLight;
 
     CameraData mCamera;
 
-    GLuint DirectionLightHandle;
-    GLuint PointLightsHandle;
-    GLuint SpheresHandle;
-    GLuint PlanesHandle;
-    GLuint TrianglesHandle;
-    GLuint CameraHandle;
+    GLuint DirectionLightHandle{ 0 };
+    GLuint PointLightsHandle{ 0 };
+    GLuint SpheresHandle{ 0 };
+    GLuint PlanesHandle{ 0 };
+    GLuint TrianglesHandle{ 0 };
+    GLuint CameraHandle{ 0 };
 };

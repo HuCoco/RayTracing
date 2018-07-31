@@ -18,7 +18,6 @@ void SceneViewer::Initialize()
     glGenBuffers(1, &PlanesHandle);
     glGenBuffers(1, &TrianglesHandle);
     glGenBuffers(1, &CameraHandle);
-
 }
 
 void SceneViewer::UpdateShaderData()
@@ -50,15 +49,41 @@ void SceneViewer::UpdateShaderData()
     glBindBufferBase(GL_UNIFORM_BUFFER, 0, DirectionLightHandle);
     glBindBufferBase(GL_UNIFORM_BUFFER, 1, PointLightsHandle);
     glBindBufferBase(GL_UNIFORM_BUFFER, 3, SpheresHandle);
-    glBindBufferBase(GL_UNIFORM_BUFFER, 4, SpheresHandle);
-    glBindBufferBase(GL_UNIFORM_BUFFER, 5, SpheresHandle);
+    glBindBufferBase(GL_UNIFORM_BUFFER, 4, PlanesHandle);
+    glBindBufferBase(GL_UNIFORM_BUFFER, 5, TrianglesHandle);
     glBindBufferBase(GL_UNIFORM_BUFFER, 6, CameraHandle);
+    
 
-    glGetUniformLocation(mProgram, "NumActiveSpheres");
     glUniform1ui(glGetUniformLocation(mProgram, "NumActiveLights"), mNumActivePointLight);
     glUniform1ui(glGetUniformLocation(mProgram, "NumActiveSpheres"), mNumActiveSpheres);
+    glUniform1ui(glGetUniformLocation(mProgram, "mNumActivePlanes"), mNumActivePlanes);
+    glUniform1ui(glGetUniformLocation(mProgram, "mNumActiveTriangles"), mNumActiveTriangles);
     glUniform1ui(glGetUniformLocation(mProgram, "NumSample"), 100);
-    glUniform1ui(glGetUniformLocation(mProgram, "ReflectLevels"), 1);
-    glUniform1i(glGetUniformLocation(mProgram, "HasShadow"), 0);
+    glUniform1ui(glGetUniformLocation(mProgram, "ReflectLevels"), 0);
+    glUniform1i(glGetUniformLocation(mProgram, "HasShadow"),1);
+        
+
+}
+
+void SceneViewer::SetViewWindow(ViewWindow* output)
+{
+    m_OutputWindow = output;
+    glGenTextures(1, &mOutputTexture);
+    glBindTexture(GL_TEXTURE_2D, mOutputTexture);
+    glTexStorage2D(GL_TEXTURE_2D, 1, GL_RGBA32F, m_OutputWindow->GetWidth(), m_OutputWindow->GetHeight());
+    m_OutputWindow->SetImTextureID((ImTextureID)(mOutputTexture));
+}
+
+void SceneViewer::DoRender()
+{
+    glUseProgram(mProgram);
+    glFinish();
+    glBindImageTexture(0, mOutputTexture, 0, GL_FALSE, 0, GL_WRITE_ONLY, GL_RGBA32F);
+    glDispatchCompute(40, 30, 1);
+    glDispatchComputeIndirect(0);
+    glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
+    glFinish();
+
+    m_OutputWindow->Update();
 }
 

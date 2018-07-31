@@ -221,6 +221,36 @@ vec4 computeBRDF(vec3 L, vec3 V, vec3 N, MaterialData mat, PointLightData plight
    	return vec4(res,1.0);
 }
 
+vec4 computeBRDF2(vec3 L, vec3 V, vec3 N, MaterialData mat, vec3 color)
+{
+	float NoV = dot(N, V);
+	float NoL = dot(N, L);
+	vec3 H = V + L;
+	H = normalize(H);
+	float NoH = dot(N, H);
+
+	vec3 F0 = vec3(mat.roughness);
+	vec3 albedo = mat.albedo;
+	F0 = mix(F0, albedo, vec3(mat.metallic));
+
+	vec3 F = FresnelEquation(N, V, F0);
+
+	float NDF = NormalDistributionFunction(NoH, mat.roughness);
+    float G = GeometryFunction(N, V, L, mat.roughness);
+
+    vec3 nominator = NDF * G * F;
+   	float denominator = 4.0 * max(NoV,0.0) * max(NoL, 0.0) + 0.0001;
+   	vec3 specular = nominator / denominator;
+
+   	vec3 kS = F;
+   	vec3 kD = vec3(1.0) - kS;
+   	kD =  kD * vec3(1.0 - mat.metallic);
+   	float NdotL = max(NoL, 0.0);
+
+   	vec3 res = (kD * mat.albedo / 3.1415926 + specular) * vec3(1.0) * NdotL;
+   	return vec4(res,1.0);
+}
+
 
 bool SphereHit(SphereData sphere, Ray ray, float tmin, float tmax, bool onlyCheckShadow)
 {
@@ -375,6 +405,7 @@ vec4 RayTrace(Ray ray, uint reflectLevels, bool hasShadow)
 
         if(HasShadow)
         {
+        	shadow = true;
 			for(int j = 0; j < NumActiveSpheres; j++)
 			{
 				bool hasHit = SphereHit(Spheres[j],newRay,DEFAULT_TMIN,MaxLength,true);
@@ -389,13 +420,51 @@ vec4 RayTrace(Ray ray, uint reflectLevels, bool hasShadow)
 			{
 				continue;
 			}
+
+			for(int j = 0; j < mNumActiveTriangles; j++)
+			{
+				bool hasHit = TriangleHit(Triangles[j],newRay,DEFAULT_TMIN,MaxLength,true);
+				if(hasHit)
+				{
+					shadow = false;
+					break;
+				}
+			}
+
+			if(shadow == false)
+			{
+				continue;
+			}
+
+			// for(int j = 0; j < mNumActivePlanes; j++)
+			// {
+			// 	bool hasHit = PlaneHit(Planes[j],newRay,DEFAULT_TMIN,MaxLength,true);
+			// 	if(hasHit)
+			// 	{
+			// 		shadow = false;
+			// 		break;
+			// 	}
+			// }
+
+			// if(shadow == false)
+			// {
+			// 	continue;
+			// }
+
 		}
 
-		float attenuation = 1.0 /  (MaxLength * MaxLength);
+		float attenuation = 1.0 / (1.0f + 0.09f * MaxLength + 0.032f * MaxLength * MaxLength);
 		color += computeBRDF(L,V,N,Materials[nearestHitRec.mat],PointLights[i],attenuation);
 	}
 
-	vec4 ambient = vec4(0.03f) *  vec4(Materials[nearestHitRec.mat].albedo,1.0);
+	{
+		//vec3 Lin = DirectionLights.direction;
+		//float MaxLength = length(Lin);
+		//float invLen = 1 / MaxLength;
+		//vec3 L = Lin * invLen;
+		//color += computeBRDF2(L,V,N,Materials[nearestHitRec.mat],DirectionLights.color);
+	}
+	vec4 ambient = vec4(0.1f) *  vec4(Materials[nearestHitRec.mat].albedo,1.0);
 	color += ambient;
 	color = color / (color + vec4(1.0));
 
@@ -419,7 +488,7 @@ void main(void)
 	clamp(color,0,1);
 	barrier();
 	color.a = 1;
-	imageStore(output_image, pos.xy, color); 
+	imageStore(output_image, ivec2(pos.x,480 - pos.y), color); 
 	// vec3 c = DirectionLights.color;
 	// ivec2 pos = ivec2(gl_GlobalInvocationID.xy);
 	

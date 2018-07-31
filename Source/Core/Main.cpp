@@ -129,8 +129,8 @@ static void glfw_error_callback(int error, const char* description)
 Texture tex;
 
 
-
-
+#include <SceneViewer/PBRViewer.h>
+#include <UI/RenderUI.h>
 int main()
 {
     RenderUI::GetInstance()->Initialize();
@@ -170,6 +170,11 @@ int main()
 
     gImage.setImage(scene2.camera.getImageWidth(), scene2.camera.getImageHeight());
     
+    PBRSceneViewer Viewer;
+    ViewWindow view("test");
+    Viewer.Initialize();
+    Viewer.SetScene(&scene3);
+    Viewer.SetViewWindow(&view);
 
     lut_tex.Load("D:/RayTracing/Resource/Textures/pbdf_lut/ibl_brdf_lut.png");
     PBR::ComputeShaderRenderer::GetInstance()->Initialize();
@@ -183,80 +188,72 @@ int main()
         ImGui_ImplGlfwGL3_NewFrame();
 
         RenderUI::GetInstance()->Update();
-
-        ImGui::Begin("Render Option");
-        {
-            static int light_mode = 0;
-            ImGui::Text("Lighting Model:");
-            ImGui::Separator();
-            
-            ImGui::RadioButton("Traditional Rendering", &light_mode, 1);
-            ImGui::RadioButton("Physicall Base Rendering", &light_mode, 2);
-          
-        }
+        Viewer.Update();
 
 
+        
 
-        ImGui::End();
-        ImGui::ShowDemoWindow();
-        gImage.UpdateTexture();
-        {
-            static uint32_t aaa = 0;
-            ImGui::Begin("Option");
-            if (ImGui::Button("Start"))
-            {
-                //AsynRenderer::GetInstance()->RenderScene(&scene3, &gImage, 8, hasShadow3, reflectLevels3, numSample3);
-            }
-            if (ImGui::Button("Start2"))
-            {
-               // AsynRenderer::GetInstance()->RenderScene(&scene2, &gImage, 8, hasShadow2, reflectLevels2, numSample2);
-            }
-            if (ImGui::Button("Gamma"))
-            {
-                gImage.gammaCorrect();
-            }
-            ImGui::End();
-        }
 
-        {
-            ImGui::Begin("Option");
-            PBR::ComputeShaderRenderer::GetInstance()->GenerateShaderData(scene3);
-            PBR::ComputeShaderRenderer::GetInstance()->PassShaderData();
-            PBR::ComputeShaderRenderer::GetInstance()->Render();
-            glBindTexture(GL_TEXTURE_2D, PBR::ComputeShaderRenderer::GetInstance()->GetOutputImageHandle());
-            ImTextureID my_tex_id = reinterpret_cast<ImTextureID>(PBR::ComputeShaderRenderer::GetInstance()->GetOutputImageHandle());// (gImage.GetGLTextureHandle());//io.Fonts->TexID;
-            //ImTextureID my_tex_id = reinterpret_cast<ImTextureID>(gImage.GetGLTextureHandle());
-            float my_tex_w = (float)gImage.GetWidth();//(float)io.Fonts->TexWidth;
-            float my_tex_h = (float)gImage.GetHeight();//(float)io.Fonts->TexHeight;
-            ImVec2 pos = ImGui::GetCursorScreenPos();
-            ImGui::Image(my_tex_id, ImVec2(my_tex_w, my_tex_h), ImVec2(0, 0), ImVec2(1, 1), ImColor(255, 255, 255, 255), ImColor(255, 255, 255, 128));
-            
-            if (ImGui::IsItemHovered())
-            {
-                ImGui::BeginTooltip();
-                float region_sz = 32.0f;
-                float region_x = io.MousePos.x - pos.x - region_sz * 0.5f;
-                if (region_x < 0.0f)
-                    region_x = 0.0f;
-                else if (region_x > my_tex_w - region_sz)
-                    region_x = my_tex_w - region_sz;
-                float region_y = io.MousePos.y - pos.y - region_sz * 0.5f;
-                if (region_y < 0.0f)
-                    region_y = 0.0f;
-                else if (region_y > my_tex_h - region_sz)
-                    region_y = my_tex_h - region_sz;
-                float zoom = 4.0f;
-                //ImGui::Text("Min: (%.2f, %.2f)", region_x, region_y);
-                //ImGui::Text("Max: (%.2f, %.2f)", region_x + region_sz, region_y + region_sz);
+        //ImGui::End();
+        //ImGui::ShowDemoWindow();
+        //gImage.UpdateTexture();
+        //{
+        //    static uint32_t aaa = 0;
+        //    ImGui::Begin("Option");
+        //    if (ImGui::Button("Start"))
+        //    {
+        //        //AsynRenderer::GetInstance()->RenderScene(&scene3, &gImage, 8, hasShadow3, reflectLevels3, numSample3);
+        //    }
+        //    if (ImGui::Button("Start2"))
+        //    {
+        //       // AsynRenderer::GetInstance()->RenderScene(&scene2, &gImage, 8, hasShadow2, reflectLevels2, numSample2);
+        //    }
+        //    if (ImGui::Button("Gamma"))
+        //    {
+        //        gImage.gammaCorrect();
+        //    }
+        //    ImGui::End();
+        //}
 
-                ImVec2 uv0 = ImVec2((region_x) / my_tex_w, (region_y) / my_tex_h);
-                ImVec2 uv1 = ImVec2((region_x + region_sz) / my_tex_w, (region_y + region_sz) / my_tex_h);
-                //ImGui::Text("uv: (%.2f, %.2f)", uv0.x, uv0.y);
-                ImGui::Image(my_tex_id, ImVec2(region_sz * zoom, region_sz * zoom), uv0, uv1, ImColor(255, 255, 255, 255), ImColor(255, 255, 255, 128));
-                ImGui::EndTooltip();
-            }
-            ImGui::End();
-        }
+        //{
+        //    ImGui::Begin("Option");
+        //    PBR::ComputeShaderRenderer::GetInstance()->GenerateShaderData(scene3);
+        //    PBR::ComputeShaderRenderer::GetInstance()->PassShaderData();
+        //    PBR::ComputeShaderRenderer::GetInstance()->Render();
+        //    glBindTexture(GL_TEXTURE_2D, PBR::ComputeShaderRenderer::GetInstance()->GetOutputImageHandle());
+        //    ImTextureID my_tex_id = reinterpret_cast<ImTextureID>(PBR::ComputeShaderRenderer::GetInstance()->GetOutputImageHandle());// (gImage.GetGLTextureHandle());//io.Fonts->TexID;
+        //    ImTextureID my_tex_id = reinterpret_cast<ImTextureID>(gImage.GetGLTextureHandle());
+        //    float my_tex_w = (float)gImage.GetWidth();//(float)io.Fonts->TexWidth;
+        //    float my_tex_h = (float)gImage.GetHeight();//(float)io.Fonts->TexHeight;
+        //    ImVec2 pos = ImGui::GetCursorScreenPos();
+        //    ImGui::Image(my_tex_id, ImVec2(my_tex_w, my_tex_h), ImVec2(0, 0), ImVec2(1, 1), ImColor(255, 255, 255, 255), ImColor(255, 255, 255, 128));
+        //    
+        //    if (ImGui::IsItemHovered())
+        //    {
+        //        ImGui::BeginTooltip();
+        //        float region_sz = 32.0f;
+        //        float region_x = io.MousePos.x - pos.x - region_sz * 0.5f;
+        //        if (region_x < 0.0f)
+        //            region_x = 0.0f;
+        //        else if (region_x > my_tex_w - region_sz)
+        //            region_x = my_tex_w - region_sz;
+        //        float region_y = io.MousePos.y - pos.y - region_sz * 0.5f;
+        //        if (region_y < 0.0f)
+        //            region_y = 0.0f;
+        //        else if (region_y > my_tex_h - region_sz)
+        //            region_y = my_tex_h - region_sz;
+        //        float zoom = 4.0f;
+        //        ImGui::Text("Min: (%.2f, %.2f)", region_x, region_y);
+        //        ImGui::Text("Max: (%.2f, %.2f)", region_x + region_sz, region_y + region_sz);
+
+        //        ImVec2 uv0 = ImVec2((region_x) / my_tex_w, (region_y) / my_tex_h);
+        //        ImVec2 uv1 = ImVec2((region_x + region_sz) / my_tex_w, (region_y + region_sz) / my_tex_h);
+        //        ImGui::Text("uv: (%.2f, %.2f)", uv0.x, uv0.y);
+        //        ImGui::Image(my_tex_id, ImVec2(region_sz * zoom, region_sz * zoom), uv0, uv1, ImColor(255, 255, 255, 255), ImColor(255, 255, 255, 128));
+        //        ImGui::EndTooltip();
+        //    }
+        //    ImGui::End();
+        //}
         
         // Rendering
         int display_w, display_h;
@@ -361,41 +358,41 @@ namespace Phong
         scene.numSurfaces = 15;
         scene.surfacep = new SurfacePtr[scene.numSurfaces];
 
-        scene.surfacep[0] = new Plane(0.0, 1.0, 0.0, 0.0, &(scene.material[2])); // Horizontal plane.
-        scene.surfacep[1] = new Plane(1.0, 0.0, 0.0, 0.0, &(scene.material[4])); // Left vertical plane.
-        scene.surfacep[2] = new Plane(0.0, 0.0, 1.0, 0.0, &(scene.material[4])); // Right vertical plane.
-        scene.surfacep[3] = new Sphere(Vector3d(40.0, 20.0, 42.0), 22.0, &(scene.material[0])); // Big sphere.
-        scene.surfacep[4] = new Sphere(Vector3d(75.0, 10.0, 40.0), 12.0, &(scene.material[1])); // Small sphere.
+        scene.surfacep[0] = new Plane(0.0, 1.0, 0.0, 0.0, 2); // Horizontal plane.
+        scene.surfacep[1] = new Plane(1.0, 0.0, 0.0, 0.0, 4); // Left vertical plane.
+        scene.surfacep[2] = new Plane(0.0, 0.0, 1.0, 0.0, 4); // Right vertical plane.
+        scene.surfacep[3] = new Sphere(Vector3d(40.0, 20.0, 42.0), 22.0, 0); // Big sphere.
+        scene.surfacep[4] = new Sphere(Vector3d(75.0, 10.0, 40.0), 12.0, 1); // Small sphere.
 
                                                                                                 // Cube +y face.
         scene.surfacep[5] = new Triangle(Vector3d(50.0, 20.0, 90.0), Vector3d(50.0, 20.0, 70.0),
-            Vector3d(30.0, 20.0, 70.0), &(scene.material[3]));
+            Vector3d(30.0, 20.0, 70.0), 3);
         scene.surfacep[6] = new Triangle(Vector3d(50.0, 20.0, 90.0), Vector3d(30.0, 20.0, 70.0),
-            Vector3d(30.0, 20.0, 90.0), &(scene.material[3]));
+            Vector3d(30.0, 20.0, 90.0), 3);
 
         // Cube +x face.
         scene.surfacep[7] = new Triangle(Vector3d(50.0, 0.0, 70.0), Vector3d(50.0, 20.0, 70.0),
-            Vector3d(50.0, 20.0, 90.0), &(scene.material[3]));
+            Vector3d(50.0, 20.0, 90.0), 3);
         scene.surfacep[8] = new Triangle(Vector3d(50.0, 0.0, 70.0), Vector3d(50.0, 20.0, 90.0),
-            Vector3d(50.0, 0.0, 90.0), &(scene.material[3]));
+            Vector3d(50.0, 0.0, 90.0), 3);
 
         // Cube -x face.
         scene.surfacep[9] = new Triangle(Vector3d(30.0, 0.0, 90.0), Vector3d(30.0, 20.0, 90.0),
-            Vector3d(30.0, 20.0, 70.0), &(scene.material[3]));
+            Vector3d(30.0, 20.0, 70.0), 3);
         scene.surfacep[10] = new Triangle(Vector3d(30.0, 0.0, 90.0), Vector3d(30.0, 20.0, 70.0),
-            Vector3d(30.0, 0.0, 70.0), &(scene.material[3]));
+            Vector3d(30.0, 0.0, 70.0),3);
 
         // Cube +z face.
         scene.surfacep[11] = new Triangle(Vector3d(50.0, 0.0, 90.0), Vector3d(50.0, 20.0, 90.0),
-            Vector3d(30.0, 20.0, 90.0), &(scene.material[3]));
+            Vector3d(30.0, 20.0, 90.0), 3);
         scene.surfacep[12] = new Triangle(Vector3d(50.0, 0.0, 90.0), Vector3d(30.0, 20.0, 90.0),
-            Vector3d(30.0, 0.0, 90.0), &(scene.material[3]));
+            Vector3d(30.0, 0.0, 90.0), 3);
 
         // Cube -z face.
         scene.surfacep[13] = new Triangle(Vector3d(30.0, 0.0, 70.0), Vector3d(30.0, 20.0, 70.0),
-            Vector3d(50.0, 20.0, 70.0), &(scene.material[3]));
+            Vector3d(50.0, 20.0, 70.0), 3);
         scene.surfacep[14] = new Triangle(Vector3d(30.0, 0.0, 70.0), Vector3d(50.0, 20.0, 70.0),
-            Vector3d(50.0, 0.0, 70.0), &(scene.material[3]));
+            Vector3d(50.0, 0.0, 70.0),3);
 
 
         // Define camera.
@@ -464,25 +461,25 @@ namespace Phong
         scene.numSurfaces = 20;
         scene.surfacep = new SurfacePtr[scene.numSurfaces];
 
-        scene.surfacep[0] = new Plane(0.0, 1.0, 0.0, 0.0, &(scene.material[3]));
-        scene.surfacep[1] = new Plane(0.0, 0.0, 1.0, 0.0, &(scene.material[4]));
+        scene.surfacep[0] = new Plane(0.0, 1.0, 0.0, 0.0, 3);
+        scene.surfacep[1] = new Plane(0.0, 0.0, 1.0, 0.0, 3);
 
         for (int i = 0; i < 14; i++)
         {
-            scene.surfacep[2 + i] = new Sphere(Vector3d(-320 + 40 * i, 20.0, 80.0 + 20 * sin(M_PI / 1.8 * i)), 20.0, &(scene.material[rand() % scene.numMaterials]));
+            scene.surfacep[2 + i] = new Sphere(Vector3d(-320 + 40 * i, 20.0, 80.0 + 20 * sin(M_PI / 1.8 * i)), 20.0, rand() % scene.numMaterials);
         }
 
         scene.surfacep[16] = new Triangle(Vector3d(0.0, 50.0, 0.0), Vector3d(50.0, 0.0, 0.0),
-            Vector3d(0.0, 0.0, 50.0), &(scene.material[0]));
+            Vector3d(0.0, 0.0, 50.0), 0);
 
         scene.surfacep[17] = new Triangle(Vector3d(0.0, 50.0, 0.0), Vector3d(-50.0, 0.0, 0.0),
-            Vector3d(0.0, 0.0, 50.0), &(scene.material[0]));
+            Vector3d(0.0, 0.0, 50.0), 0);
 
         scene.surfacep[18] = new Triangle(Vector3d(0.0, 50.0, 0.0), Vector3d(-50.0, 0.0, 0.0),
-            Vector3d(50.0, 0.0, 0.0), &(scene.material[0]));
+            Vector3d(50.0, 0.0, 0.0), 0);
 
         scene.surfacep[19] = new Triangle(Vector3d(0.0, 0.0, 50.0), Vector3d(-50.0, 0.0, 0.0),
-            Vector3d(50.0, 0.0, 0.0), &(scene.material[0]));
+            Vector3d(50.0, 0.0, 0.0), 0);
 
         scene.camera = Camera(Vector3d(300.0, 240.0, 300.0), Vector3d(45.0, 22.0, 55.0), Vector3d(0.0, 1.0, 0.0),
             (-1.0 * imageWidth) / imageHeight, (1.0 * imageWidth) / imageHeight, -1.0, 1.0, 3.0,
@@ -506,50 +503,121 @@ namespace PBR
 {
     void DefineScene3(Scene &scene, int imageWidth, int imageHeight)
     {
-        scene.backgroundColor = Color(0.0f, 0.0f, 0.0f);
+        scene.backgroundColor = Color(0.2f, 0.3f, 0.5f);
 
-        scene.amLight.I_a = Color(1.0f, 1.0f, 1.0f) * 0.55f;
+        scene.amLight.I_a = Color(1.0f, 1.0f, 1.0f) * 0.25f;
+        scene.amLight.direction = Vector3d(1.0f, 1.0f, 0.0f);
+        // Define materials.
 
-
-        scene.numMaterials = 30;
+        scene.numMaterials = 5;
         scene.material = new Material[scene.numMaterials];
-        for (int i = 0; i < 6; i++)
-        {
-            for (int j = 0; j < 5; j++)
-            {
-                scene.material[j * 6 + i].albedo = Color(1.0f, 0.0f, 0.0f);
-                scene.material[j * 6 + i].metallic = 0.25f + i * 0.15f;// i * (1.0f / 5.0f);
-                scene.material[j * 6 + i].roughness = 0.1f + j * 0.2f;
-            }
-        }
+        Material* mat = reinterpret_cast<Material*>(scene.material);
 
+        // Light red.
+        scene.material[0].albedo = Color(0.8f, 0.4f, 0.4f);
+        scene.material[0].roughness = 0.15;
+        scene.material[0].metallic = 0.55;
+        //scene.material[0].ambient = Color(0.8f, 0.4f, 0.4f);
+        //scene.material[0].specluar = Color(0.8f, 0.8f, 0.8f) / 1.5f;
+        //scene.material[0].reflection = Color(0.8f, 0.8f, 0.8f) / 3.0f;
+        //scene.material[0].shininess = 32.0f;
 
-        scene.numSurfaces = 30;
-        scene.surfacep = new SurfacePtr[scene.numSurfaces];
+        // Light green.
+        scene.material[1].albedo = Color(0.4f, 0.8f, 0.4f);
+        scene.material[1].roughness = 0.75;
+        scene.material[1].metallic = 0.25;
+        //scene.material[1].ambient = Color(0.4f, 0.8f, 0.4f);
+        //scene.material[1].specluar = Color(0.8f, 0.8f, 0.8f) / 1.5f;
+        //scene.material[1].reflection = Color(0.8f, 0.8f, 0.8f) / 3.0f;
+        //scene.material[1].shininess = 64.0f;
 
+        // Light blue.
+        scene.material[2].albedo = Color(0.4f, 0.4f, 0.8f) * 0.9f;
+        scene.material[2].roughness = 0.75;
+        scene.material[2].metallic = 0.25;
+        //scene.material[2].ambient = Color(0.4f, 0.4f, 0.8f) * 0.9f;
+        //scene.material[2].specluar = Color(0.8f, 0.8f, 0.8f) / 1.5f;
+        //scene.material[2].reflection = Color(0.8f, 0.8f, 0.8f) / 2.5f;
+        //scene.material[2].shininess = 64.0f;
 
-        for (int i = 0; i < 6; i++)
-        {
-            for (int j = 0; j < 5; j++)
-            {
-                scene.surfacep[j * 6 + i] = new Sphere(Vector3d(35.0 - i * 14, 25.0 - j * 12, 100.0), 5.0, &(scene.material)[j * 6 + i]);
-            }
+        // Yellow.
+        scene.material[3].albedo = Color(0.6f, 0.6f, 0.2f);
+        scene.material[3].roughness = 0.75;
+        scene.material[3].metallic = 0.25;
+        //scene.material[3].ambient = Color(0.6f, 0.6f, 0.2f);
+        //scene.material[3].specluar = Color(0.8f, 0.8f, 0.8f) / 1.5f;
+        //scene.material[3].reflection = Color(0.8f, 0.8f, 0.8f) / 3.0f;
+        //scene.material[3].shininess = 64.0f;
 
-        }
+        // Gray.
+        scene.material[4].albedo = Color(0.6f, 0.6f, 0.6f);
+        scene.material[4].roughness = 0.75;
+        scene.material[4].metallic = 0.25;
+        //scene.material[4].ambient = Color(0.6f, 0.6f, 0.6f);
+        //scene.material[4].specluar = Color(0.6f, 0.6f, 0.6f);
+        //scene.material[4].reflection = Color(0.8f, 0.8f, 0.8f) / 3.0f;
+        //scene.material[4].shininess = 128.0f;
 
 
         scene.numPtLights = 2;
         scene.ptLight = new PointLightSource[scene.numPtLights];
 
-        scene.ptLight[0].I_source = Color(300.0, 300.0, 300.0);
-        scene.ptLight[0].position = Vector3d(30.0, 40.0, 80.0);
+        scene.ptLight[0].I_source = Color(1300.0f, 300.0f, 300.0f);
+        scene.ptLight[0].position = Vector3d(100.0, 120.0, 10.0);
 
-        scene.ptLight[1].I_source = Color(300.0, 300.0, 300.0);
-        scene.ptLight[1].position = Vector3d(-30.0, 40.0, 80.0);
+        scene.ptLight[1].I_source = Color(300.0f, 300.0f, 300.0f);
+        scene.ptLight[1].position = Vector3d(5.0, 80.0, 60.0);
 
-        scene.camera = Camera(Vector3d(0.0, 0.0, 0.0), Vector3d(0.0, 0.0, 10.0), Vector3d(0.0, 1.0, 0.0),
+        // Define surface primitives.
+
+        scene.numSurfaces = 15;
+        scene.surfacep = new SurfacePtr[scene.numSurfaces];
+
+        scene.surfacep[0] = new Plane(0.0, 1.0, 0.0, 0.0, 2); // Horizontal plane.
+        scene.surfacep[1] = new Plane(1.0, 0.0, 0.0, 0.0, 3); // Left vertical plane.
+        scene.surfacep[2] = new Plane(0.0, 0.0, 1.0, 0.0, 3); // Right vertical plane.
+        scene.surfacep[3] = new Sphere(Vector3d(40.0, 20.0, 42.0), 22.0, 0); // Big sphere.
+        scene.surfacep[4] = new Sphere(Vector3d(75.0, 10.0, 40.0), 12.0, 1); // Small sphere.
+
+                                                                             // Cube +y face.
+        scene.surfacep[5] = new Triangle(Vector3d(50.0, 20.0, 90.0), Vector3d(50.0, 20.0, 70.0),
+            Vector3d(30.0, 20.0, 70.0), 3);
+        scene.surfacep[6] = new Triangle(Vector3d(50.0, 20.0, 90.0), Vector3d(30.0, 20.0, 70.0),
+            Vector3d(30.0, 20.0, 90.0), 3);
+
+        // Cube +x face.
+        scene.surfacep[7] = new Triangle(Vector3d(50.0, 0.0, 70.0), Vector3d(50.0, 20.0, 70.0),
+            Vector3d(50.0, 20.0, 90.0), 3);
+        scene.surfacep[8] = new Triangle(Vector3d(50.0, 0.0, 70.0), Vector3d(50.0, 20.0, 90.0),
+            Vector3d(50.0, 0.0, 90.0), 3);
+
+        // Cube -x face.
+        scene.surfacep[9] = new Triangle(Vector3d(30.0, 0.0, 90.0), Vector3d(30.0, 20.0, 90.0),
+            Vector3d(30.0, 20.0, 70.0), 3);
+        scene.surfacep[10] = new Triangle(Vector3d(30.0, 0.0, 90.0), Vector3d(30.0, 20.0, 70.0),
+            Vector3d(30.0, 0.0, 70.0), 3);
+
+        // Cube +z face.
+        scene.surfacep[11] = new Triangle(Vector3d(50.0, 0.0, 90.0), Vector3d(50.0, 20.0, 90.0),
+            Vector3d(30.0, 20.0, 90.0), 3);
+        scene.surfacep[12] = new Triangle(Vector3d(50.0, 0.0, 90.0), Vector3d(30.0, 20.0, 90.0),
+            Vector3d(30.0, 0.0, 90.0), 3);
+
+        // Cube -z face.
+        scene.surfacep[13] = new Triangle(Vector3d(30.0, 0.0, 70.0), Vector3d(30.0, 20.0, 70.0),
+            Vector3d(50.0, 20.0, 70.0), 3);
+        scene.surfacep[14] = new Triangle(Vector3d(30.0, 0.0, 70.0), Vector3d(50.0, 20.0, 70.0),
+            Vector3d(50.0, 0.0, 70.0), 3);
+
+                
+
+        //scene.camera = Camera(Vector3d(0.0, 0.0, 0.0), Vector3d(0.0, 0.0, 10.0), Vector3d(0.0, 1.0, 0.0),
+        //    (-1.0 * imageWidth) / imageHeight, (1.0 * imageWidth) / imageHeight, -1.0, 1.0, 3.0,
+        //    imageWidth, imageHeight);;
+
+        scene.camera = Camera(Vector3d(150.0, 120.0, 150.0), Vector3d(45.0, 22.0, 55.0), Vector3d(0.0, 1.0, 0.0),
             (-1.0 * imageWidth) / imageHeight, (1.0 * imageWidth) / imageHeight, -1.0, 1.0, 3.0,
-            imageWidth, imageHeight);;
+            imageWidth, imageHeight);
     }
 }
 

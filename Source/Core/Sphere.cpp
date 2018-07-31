@@ -37,7 +37,7 @@ bool Sphere::hit( const Ray &r, double tmin, double tmax, SurfaceHitRecord &rec 
         rec.t = t ;
         rec.p = r.pointAtParam(t);
         rec.normal = (Ro + t * Rd) / radius;
-        rec.mat_ptr = matp;
+        rec.mat = mat;
         rec.u = std::atan2(rec.p.x(), rec.p.z()) / (3.1415926f * 2.0f);
         rec.v = 1.0f - (std::acos(rec.p.y()) / (3.1415926f));
         return true;

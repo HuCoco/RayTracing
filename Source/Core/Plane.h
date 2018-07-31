@@ -12,21 +12,21 @@ public:
     double A, B, C, D;
 
 
-	Plane( double A_, double B_, double C_, double D_, void *mat_ptr )
+	Plane( double A_, double B_, double C_, double D_, int mat_index)
 	{ 
 		A = A_;  B = B_;  C = C_;  D = D_;  
-		matp = mat_ptr; 
+		mat = mat_index;
         type = Surface::PLANE_SURFACE;
 	}
 
 
-	Plane( const Vector3d &normal, const Vector3d &pointOnPlane, void *mat_ptr )
+	Plane( const Vector3d &normal, const Vector3d &pointOnPlane, int mat_index)
 	{
 		A = normal.x();
 		B = normal.y();
 		C = normal.z();
 		D = -dot( pointOnPlane, normal );
-		matp = mat_ptr; 
+		mat = mat_index;
 	}
 
 
